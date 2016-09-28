@@ -34,7 +34,7 @@ dependencies {
   compile "com.nablarch.framework:nablarch-core-validation-ee:${nablarchCoreValidationEeVersion}"
   compile "com.nablarch.framework:nablarch-common-dao:${nablarchCommonDaoVersion}"
   compile ("com.nablarch.framework:nablarch-fw-batch-ee:${nablarchFwBatchEeVersion}") {
-    exclude module: 'el-api' // exclude javax.el.*
+    exclude group:'*', module: 'el-api' // exclude javax.el.*
   }
   compile "com.nablarch.framework:nablarch-common-databind:${nablarchCommonDatabindVersion}"
 
@@ -48,7 +48,7 @@ dependencies {
   testCompile 'com.oracle:ojdbc6:11.2.0.2.0'
 
   testCompile ('com.nablarch.dev:nablarch-test-support:0.0.5') {
-    exclude module: 'jsp-api-2.1-glassfish' // exclude javax.el.*
+    exclude group:'*', module: 'jsp-api-2.1-glassfish' // exclude javax.el.*
   }
 
   testRuntime 'org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:1.0.0.Final'
@@ -67,7 +67,7 @@ dependencies {
   testRuntime 'org.glassfish:javax.el:3.0.0'
 
   cobertura("net.sourceforge.cobertura:cobertura:2.1.1") {
-    exclude module: 'slf4j-api'
+    exclude group:'*', module: 'slf4j-api'
   }
 }
 
