@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
+import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.annotation.Published;
 
 /**
@@ -110,9 +111,17 @@ public class RootConfig {
     }
 
     /**
+     * ペースパスとジョブの設定を初期化する。
+     * <p/>
+     * ベースパスはシステムリポジトリから設定する。
      * ジョブの設定を順に初期化する。
      */
     public void initialize() {
+        inputFileBasePath = new File(SystemRepository.getString("inputFileBasePath"));
+        outputFileBasePath = new File(SystemRepository.getString("outputFileBasePath"));
+        sqlLoaderControlFileBasePath = new File(SystemRepository.getString("sqlLoaderControlFileBasePath"));
+        sqlLoaderOutputFileBasePath = new File(SystemRepository.getString("sqlLoaderOutputFileBasePath"));
+
         for (Map.Entry<String, JobConfig> entry : jobs.entrySet()) {
             JobConfig jobConfig = entry.getValue();
             jobConfig.setJobId(entry.getKey());
