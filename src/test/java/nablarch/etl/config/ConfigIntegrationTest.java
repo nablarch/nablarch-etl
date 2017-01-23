@@ -3,6 +3,9 @@ package nablarch.etl.config;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
+import nablarch.core.repository.SystemRepository;
+import nablarch.core.repository.di.DiContainer;
+import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +25,15 @@ public class ConfigIntegrationTest {
     public void setUp() throws Exception {
         EtlConfigProvider.isInitialized = false;
         Deencapsulation.setField(RepositoryInitializer.class, "isInitialized", false);
+        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
+        DiContainer container = new DiContainer(loader);
+        SystemRepository.load(container);
     }
 
     @After
     public void tearDown() throws Exception {
         Deencapsulation.setField(RepositoryInitializer.class, "isInitialized", false);
+        SystemRepository.clear();
     }
 
     /**

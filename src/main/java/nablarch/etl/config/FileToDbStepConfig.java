@@ -18,9 +18,6 @@ public class FileToDbStepConfig extends StepConfig {
     /** ファイル名 */
     private String fileName;
 
-    /** ファイルパス */
-    private File file;
-
     /**
      * Beanクラスを取得する。
      * @return Beanクラス
@@ -58,30 +55,6 @@ public class FileToDbStepConfig extends StepConfig {
      */
     @Override
     protected void onInitialize() {
-        file = new File(getJobConfig().getInputFileBasePath(), getFileName());
-    }
-
-    /**
-     * ファイルパスを取得する。
-     * @return ファイルパス
-     */
-    public File getFile() {
-        return file;
-    }
-
-    /**
-     * SQLLoaderに使用するコントロールファイルのベースパスを取得する。
-     * @return SQLLoaderに使用するコントロールファイルのベースパス
-     */
-    public File getSqlLoaderControlFileBasePath() {
-        return getJobConfig().getSqlLoaderControlFileBasePath();
-    }
-
-    /**
-     * SQLLoaderが出力するファイルのベースパスを取得する。
-     * @return SQLLoaderが出力するファイルのベースパス
-     */
-    public File getSqlLoaderOutputFileBasePath() {
-        return getJobConfig().getSqlLoaderOutputFileBasePath();
+        // nop
     }
 }

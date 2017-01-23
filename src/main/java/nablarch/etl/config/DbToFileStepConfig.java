@@ -15,9 +15,6 @@ public class DbToFileStepConfig extends DbInputStepConfig {
     /** ファイル名 */
     private String fileName;
 
-    /** ファイルパス */
-    private File file;
-
     /**
      * ファイル名を取得する。
      * @return ファイル名
@@ -39,14 +36,6 @@ public class DbToFileStepConfig extends DbInputStepConfig {
      */
     @Override
     protected void onInitialize() {
-        file = new File(getJobConfig().getOutputFileBasePath(), fileName);
-    }
-
-    /**
-     * ファイルパスを取得する。
-     * @return ファイルパス
-     */
-    public File getFile() {
-        return file;
+        // nop
     }
 }

@@ -22,12 +22,6 @@ import org.junit.Test;
  */
 public class RootConfigTest {
 
-    // 正常な設定値
-    private final File inputFileBasePath = new File("/base/input");
-    private final File outputFileBasePath = new File("/base/output");
-    private final File sqlLoaderControlFileBasePath = new File("/base/control");
-    private final File sqlLoaderOutputFileBasePath = new File("/base/log");
-
     @Before
     public void setUp() {
         XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
@@ -38,39 +32,6 @@ public class RootConfigTest {
     @After
     public void tearDown() {
         SystemRepository.clear();
-    }
-
-    /**
-     * 正常に設定された場合、値が取得できること。
-     */
-    @Test
-    public void testNormalSetting() {
-
-        RootConfig sut = new RootConfig() {{
-            setInputFileBasePath(inputFileBasePath);
-            setOutputFileBasePath(outputFileBasePath);
-            setSqlLoaderControlFileBasePath(sqlLoaderControlFileBasePath);
-            setSqlLoaderOutputFileBasePath(sqlLoaderOutputFileBasePath);
-        }};
-
-        assertThat(sut.getInputFileBasePath(), is(new File("/base/input")));
-        assertThat(sut.getOutputFileBasePath(), is(new File("/base/output")));
-        assertThat(sut.getSqlLoaderControlFileBasePath(), is(new File("/base/control")));
-        assertThat(sut.getSqlLoaderOutputFileBasePath(), is(new File("/base/log")));
-    }
-
-    /**
-     * 初期化呼び出しで、システムリポジトリから設定が初期化されること。
-     */
-    @Test
-    public void testInitializeSetting() throws Exception {
-        RootConfig sut = new RootConfig();
-        sut.initialize();
-
-        assertThat(sut.getInputFileBasePath(), is(new File("base/input")));
-        assertThat(sut.getOutputFileBasePath(), is(new File("base/output")));
-        assertThat(sut.getSqlLoaderControlFileBasePath(), is(new File("base/control")));
-        assertThat(sut.getSqlLoaderOutputFileBasePath(), is(new File("base/log")));
     }
 
     /**
@@ -163,10 +124,6 @@ public class RootConfigTest {
         }};
 
         RootConfig sut = new RootConfig() {{
-            setInputFileBasePath(inputFileBasePath);
-            setOutputFileBasePath(outputFileBasePath);
-            setSqlLoaderControlFileBasePath(sqlLoaderControlFileBasePath);
-            setSqlLoaderOutputFileBasePath(sqlLoaderOutputFileBasePath);
             setJobs(jobs);
         }};
         sut.initialize();

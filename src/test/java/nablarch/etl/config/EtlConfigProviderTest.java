@@ -5,9 +5,10 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
-
 import mockit.Deencapsulation;
+import nablarch.core.repository.SystemRepository;
+import nablarch.core.repository.di.DiContainer;
+import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.etl.config.app.TestDto;
 import nablarch.etl.config.app.TestDto2;
 import nablarch.etl.config.app.TestDto3;
@@ -39,6 +40,10 @@ public class EtlConfigProviderTest {
     @Test
     public void testNormal() {
 
+        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
+        DiContainer container = new DiContainer(loader);
+        SystemRepository.load(container);
+
         RootConfig config = EtlConfigProvider.getConfig();
 
         // ジョブ設定でファイルパスをオーバーライドしてない場合
@@ -48,8 +53,7 @@ public class EtlConfigProviderTest {
         assertThat(job1Step1, is(notNullValue()));
         assertThat(job1Step1.getStepId(), is("step1"));
         assertThat(job1Step1.getBean().getName(), is(TestDto.class.getName()));
-        assertThat(job1Step1.getFile(), is(new File("base/input/test-input.csv")));
-        assertThat(job1Step1.getSqlLoaderControlFileBasePath(), is(new File("base/control")));
+        assertThat(job1Step1.getFileName(), is("test-input.csv"));
 
         DbToDbStepConfig job1Step2 = config.getStepConfig("job1", "step2");
 
@@ -68,20 +72,21 @@ public class EtlConfigProviderTest {
         assertThat(job1Step3, is(notNullValue()));
         assertThat(job1Step3.getStepId(), is("step3"));
         assertThat(job1Step3.getBean().getName(), is(TestDto3.class.getName()));
-        assertThat(job1Step3.getFile(), is(new File("base/output/test-output.csv")));
+        assertThat(job1Step3.getFileName(), is("test-output.csv"));
 
         // ジョブ設定でファイルパスをオーバーライドした場合
 
         FileToDbStepConfig overrideStep1 = config.getStepConfig("override-base-path", "step1");
 
         assertThat(overrideStep1, is(notNullValue()));
-        assertThat(overrideStep1.getFile(), is(new File("override/input/test-input.csv")));
-        assertThat(overrideStep1.getSqlLoaderControlFileBasePath(), is(new File("override/control")));
+        assertThat(overrideStep1.getFileName(), is("test-input.csv"));
 
         DbToFileStepConfig overrideStep3 = config.getStepConfig("override-base-path", "step3");
 
         assertThat(overrideStep3, is(notNullValue()));
-        assertThat(overrideStep3.getFile(), is(new File("override/output/test-output.csv")));
+        assertThat(overrideStep3.getFileName(), is("test-output.csv"));
+
+        SystemRepository.clear();
     }
 
     /**

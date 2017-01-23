@@ -6,8 +6,8 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.FileToDbStepConfig;
-import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.RootConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
@@ -61,10 +61,10 @@ public class SqlLoaderBatchletTest {
     private RootConfig mockEtlConfig;
 
     @Mocked
-    private JobConfig mockJobConfig;
+    private FileToDbStepConfig mockFileToDbStepConfig;
 
     @Mocked
-    private FileToDbStepConfig mockFileToDbStepConfig; 
+    private CommonConfig mockCommonConfig;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -94,6 +94,7 @@ public class SqlLoaderBatchletTest {
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
         Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "commonConfig", mockCommonConfig);
     }
 
     /**
@@ -102,67 +103,9 @@ public class SqlLoaderBatchletTest {
     @Test
     public void testRequired() throws Exception {
 
-        // sqlLoaderControlFileBasePath
-
-        new Expectations() {{
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
-            result = null;
-        }};
-
-        try {
-            sut.process();
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("sqlLoaderControlFileBasePath is required. jobId = [test-job], stepId = [test-step]"));
-        }
-
-        // sqlLoaderOutputFileBasePath
-
-        new Expectations() {{
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
-            result = new File("src/test/resources/nablarch/etl/ctl");
-            mockFileToDbStepConfig.getSqlLoaderOutputFileBasePath();
-            result = null;
-        }};
-
-        try {
-            sut.process();
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("sqlLoaderOutputFileBasePath is required. jobId = [test-job], stepId = [test-step]"));
-        }
-
-        // inputFileBasePath
-
-        new Expectations() {{
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
-            result = new File("src/test/resources/nablarch/etl/ctl");
-            mockFileToDbStepConfig.getSqlLoaderOutputFileBasePath();
-            result = new File(tmpPath);
-            mockFileToDbStepConfig.getJobConfig();
-            result = mockJobConfig;
-            mockJobConfig.getInputFileBasePath();
-            result = null;
-        }};
-
-        try {
-            sut.process();
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("inputFileBasePath is required. jobId = [test-job], stepId = [test-step]"));
-        }
-
         // fileName
 
         new Expectations() {{
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
-            result = new File("src\\test\\resources\\nablarch\\etl\\ctl");
-            mockFileToDbStepConfig.getSqlLoaderOutputFileBasePath();
-            result = new File(tmpPath);
-            mockFileToDbStepConfig.getJobConfig();
-            result = mockJobConfig;
-            mockJobConfig.getInputFileBasePath();
-            result = new File(tmpPath);
             mockFileToDbStepConfig.getFileName();
             result = null;
         }};
@@ -177,14 +120,6 @@ public class SqlLoaderBatchletTest {
         // bean
 
         new Expectations() {{
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
-            result = new File("src\\test\\resources\\nablarch\\etl\\ctl");
-            mockFileToDbStepConfig.getSqlLoaderOutputFileBasePath();
-            result = new File(tmpPath);
-            mockFileToDbStepConfig.getJobConfig();
-            result = mockJobConfig;
-            mockJobConfig.getInputFileBasePath();
-            result = new File(tmpPath);
             mockFileToDbStepConfig.getFileName();
             result = "test";
             mockFileToDbStepConfig.getBean();
@@ -212,18 +147,18 @@ public class SqlLoaderBatchletTest {
             mockFileToDbStepConfig.getBean();
             result = Person.class;
             mockFileToDbStepConfig.getFileName();
-            result = "dummy";
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
+            result = "Person.csv";
+            mockCommonConfig.getSqlLoaderControlFileBasePath();
             result = new File("src/test/resources/nablarch/etl/ctl");
-            mockFileToDbStepConfig.getSqlLoaderOutputFileBasePath();
+            mockCommonConfig.getSqlLoaderOutputFileBasePath();
             result = new File(tmpPath);
-            mockFileToDbStepConfig.getFile();
-            result = new File("src/test/resources/nablarch/etl/data/Person.csv");
+            mockCommonConfig.getInputFileBasePath();
+            result = new File("src/test/resources/nablarch/etl/data");
         }};
 
         new MockUp<ProcessBuilder>() {
             @Mock
-            public void $init(String... command) {
+             public void $init(String... command) {
                 // 指定した引数でコンストラクタが実行されていること
                 assertThat(command[0], is("sqlldr"));
                 assertThat(command[1], is("USERID=ssd/ssd@xe"));
@@ -263,13 +198,13 @@ public class SqlLoaderBatchletTest {
             mockFileToDbStepConfig.getBean();
             result = Person.class;
             mockFileToDbStepConfig.getFileName();
-            result = "dummy";
-            mockFileToDbStepConfig.getSqlLoaderControlFileBasePath();
+            result = "Person.csv";
+            mockCommonConfig.getSqlLoaderControlFileBasePath();
             result = new File("src/test/resources/nablarch/etl/ctl");
-            mockFileToDbStepConfig.getSqlLoaderOutputFileBasePath();
+            mockCommonConfig.getSqlLoaderOutputFileBasePath();
             result = new File(tmpPath);
-            mockFileToDbStepConfig.getFile();
-            result = new File("src/test/resources/nablarch/etl/data/Person.csv");
+            mockCommonConfig.getInputFileBasePath();
+            result = new File("src/test/resources/nablarch/etl/data");
         }};
 
         new MockUp<ProcessBuilder>() {

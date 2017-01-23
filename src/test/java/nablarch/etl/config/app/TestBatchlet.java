@@ -14,6 +14,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.ConfigIntegrationTest;
 import nablarch.etl.config.DbToFileStepConfig;
 import nablarch.etl.config.EtlConfig;
@@ -37,6 +38,10 @@ public class TestBatchlet extends AbstractBatchlet {
     @Inject
     private RootConfig etlConfig;
 
+    @EtlConfig
+    @Inject
+    private CommonConfig commonConfig;
+
     @Override
     public String process() {
 
@@ -48,9 +53,10 @@ public class TestBatchlet extends AbstractBatchlet {
             FileToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto.class.getName()));
-            assertThat(config.getFile(), is(new File("base/input/test-input.csv")));
-            assertThat(config.getSqlLoaderControlFileBasePath(), is(new File("base/control")));
-            assertThat(config.getSqlLoaderOutputFileBasePath(), is(new File("base/log")));
+            assertThat(commonConfig.getInputFileBasePath(), is(new File("base/input")));
+            assertThat(config.getFileName(), is("test-input.csv"));
+            assertThat(commonConfig.getSqlLoaderControlFileBasePath(), is(new File("base/control")));
+            assertThat(commonConfig.getSqlLoaderOutputFileBasePath(), is(new File("base/log")));
 
         } else if ("step3".equals(stepId)) {
 
@@ -58,7 +64,8 @@ public class TestBatchlet extends AbstractBatchlet {
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto3.class.getName()));
             assertThat(config.getSqlId(), is("SELECT_TEST3"));
-            assertThat(config.getFile(), is(new File("base/output/test-output.csv")));
+            assertThat(commonConfig.getOutputFileBasePath(), is(new File("base/output")));
+            assertThat(config.getFileName(), is("test-output.csv"));
 
         } else {
             fail("not happen");

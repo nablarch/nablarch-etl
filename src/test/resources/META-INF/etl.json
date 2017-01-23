@@ -1,8 +1,4 @@
 {
-  "inputFileBasePath": "base/input",
-  "outputFileBasePath": "base/output",
-  "sqlLoaderControlFileBasePath": "base/control",
-  "sqlLoaderOutputFileBasePath": "base/log",
   "jobs": {
     "job1": {
       "steps": {
@@ -26,10 +22,6 @@
       }
     },
     "override-base-path" : {
-      "inputFileBasePath": "override/input",
-      "outputFileBasePath": "override/output",
-      "sqlLoaderControlFileBasePath": "override/control",
-      "sqlLoaderOutputFileBasePath": "override/log",
       "steps": {
         "step1": {
           "type": "file2db",
