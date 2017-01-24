@@ -4,6 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration http://tis.co.jp/nablarch/component-configuration">
 
-    <config-file file="nablarch/etl/config/common-setting-error.config" />
+    <config-file file="nablarch/etl/config/common-setting-error-invalid-path.config" />
 
 </component-configuration>

@@ -27,7 +27,7 @@ public class JobConfigTest {
      */
     @Test
     public void testInitialize() throws Exception {
-        Map<String, StepConfig> steps = new HashMap<>();
+        Map<String, StepConfig> steps = new HashMap<String, StepConfig>();
         steps.put("hoge", stepConfig);
         sut.setSteps(steps);
 
@@ -52,7 +52,7 @@ public class JobConfigTest {
      */
     @Test
     public void testSteps() throws Exception {
-        Map<String, StepConfig> steps = new HashMap<>();
+        Map<String, StepConfig> steps = new HashMap<String, StepConfig>();
         steps.put("hoge", stepConfig);
         sut.setSteps(steps);
 

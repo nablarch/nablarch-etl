@@ -78,12 +78,28 @@ public class CommonConfigTest {
     }
 
     /**
-     * 設定ファイルにミスがある場合、例外が送出されること。
+     * 設定ファイルに入力漏れがある場合、例外が送出されること。
      */
     @Test
-    public void testInitializeError() throws Exception {
+    public void testInitializeErrorUndefinedPath() throws Exception {
         SystemRepository.clear();
-        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize-error.xml");
+        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize-error-undefined-path.xml");
+        DiContainer container = new DiContainer(loader);
+        SystemRepository.load(container);
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("outputFileBasePath is required. check the config file.");
+
+        sut.initialize();
+    }
+
+    /**
+     * 設定ファイルのパスが不正な場合、例外が送出されること。
+     */
+    @Test
+    public void testInitializeErrorInvalidPath() throws Exception {
+        SystemRepository.clear();
+        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize-error-invalid-path.xml");
         DiContainer container = new DiContainer(loader);
         SystemRepository.load(container);
 

@@ -1,7 +1,5 @@
 package nablarch.etl.config;
 
-import java.io.File;
-
 import nablarch.core.util.annotation.Published;
 
 /**

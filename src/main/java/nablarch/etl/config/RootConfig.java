@@ -1,10 +1,8 @@
 package nablarch.etl.config;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
-import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.annotation.Published;
 
 /**
