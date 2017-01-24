@@ -6,7 +6,6 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
-import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.FileToDbStepConfig;
 import nablarch.etl.config.RootConfig;
 import nablarch.test.support.SystemRepositoryResource;
@@ -63,9 +62,6 @@ public class SqlLoaderBatchletTest {
     @Mocked
     private FileToDbStepConfig mockFileToDbStepConfig;
 
-    @Mocked
-    private CommonConfig mockCommonConfig;
-
     @BeforeClass
     public static void setUpClass() throws Exception {
         tmpPath = temporaryFolder.getRoot().getPath();
@@ -94,7 +90,6 @@ public class SqlLoaderBatchletTest {
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
         Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
-        Deencapsulation.setField(sut, "commonConfig", mockCommonConfig);
     }
 
     /**
@@ -143,17 +138,14 @@ public class SqlLoaderBatchletTest {
     public void testProcess_success(@Mocked final Process process, @Mocked final InputStream inputStream) throws Exception {
 
         // -------------------------------------------------- setup objects that is injected
+        Deencapsulation.setField(sut, "inputFileBasePath", new File("src/test/resources/nablarch/etl/data"));
+        Deencapsulation.setField(sut, "sqlLoaderControlFileBasePath", new File("src/test/resources/nablarch/etl/ctl"));
+        Deencapsulation.setField(sut, "sqlLoaderOutputFileBasePath", new File(tmpPath));
         new Expectations() {{
             mockFileToDbStepConfig.getBean();
             result = Person.class;
             mockFileToDbStepConfig.getFileName();
             result = "Person.csv";
-            mockCommonConfig.getSqlLoaderControlFileBasePath();
-            result = new File("src/test/resources/nablarch/etl/ctl");
-            mockCommonConfig.getSqlLoaderOutputFileBasePath();
-            result = new File(tmpPath);
-            mockCommonConfig.getInputFileBasePath();
-            result = new File("src/test/resources/nablarch/etl/data");
         }};
 
         new MockUp<ProcessBuilder>() {
@@ -194,17 +186,14 @@ public class SqlLoaderBatchletTest {
     public void testProcess_failed(@Mocked final Process process, @Mocked final InputStream inputStream) throws Exception {
 
         // -------------------------------------------------- setup objects that is injected
+        Deencapsulation.setField(sut, "inputFileBasePath", new File("src/test/resources/nablarch/etl/data"));
+        Deencapsulation.setField(sut, "sqlLoaderControlFileBasePath", new File("src/test/resources/nablarch/etl/ctl"));
+        Deencapsulation.setField(sut, "sqlLoaderOutputFileBasePath", new File(tmpPath));
         new Expectations() {{
             mockFileToDbStepConfig.getBean();
             result = Person.class;
             mockFileToDbStepConfig.getFileName();
             result = "Person.csv";
-            mockCommonConfig.getSqlLoaderControlFileBasePath();
-            result = new File("src/test/resources/nablarch/etl/ctl");
-            mockCommonConfig.getSqlLoaderOutputFileBasePath();
-            result = new File(tmpPath);
-            mockCommonConfig.getInputFileBasePath();
-            result = new File("src/test/resources/nablarch/etl/data");
         }};
 
         new MockUp<ProcessBuilder>() {

@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration /component-configuration.xsd">
 
-  <config-file file="nablarch/etl/config/common-setting.config" />
+  <config-file file="nablarch/etl/config/path-setting.config" />
 
   <component name="sqlLoader" class="nablarch.core.db.statement.BasicSqlLoader">
     <property name="fileEncoding" value="utf-8"/>

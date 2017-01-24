@@ -15,9 +15,9 @@ import javax.inject.Named;
 
 import nablarch.common.databind.ObjectMapper;
 import nablarch.common.databind.ObjectMapperFactory;
-import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.DbToFileStepConfig;
 import nablarch.etl.config.EtlConfig;
+import nablarch.etl.config.PathConfig;
 import nablarch.etl.config.RootConfig;
 
 /**
@@ -42,10 +42,10 @@ public class FileItemWriter extends AbstractItemWriter {
     @Inject
     private RootConfig etlConfig;
 
-    /** 共通設定 */
-    @EtlConfig
+    /** 出力ファイルのベースパス */
+    @PathConfig("outputFileBasePath")
     @Inject
-    private CommonConfig commonConfig;
+    private File outputFileBasePath;
 
     /** Javaオブジェクトからデータに変換を行うマッパー */
     ObjectMapper<Object> mapper;
@@ -63,7 +63,7 @@ public class FileItemWriter extends AbstractItemWriter {
         EtlUtil.verifyRequired(jobId, stepId, "fileName", config.getFileName());
 
         mapper = (ObjectMapper<Object>) ObjectMapperFactory.create(
-                        config.getBean(), new FileOutputStream(new File(commonConfig.getOutputFileBasePath(), config.getFileName())));
+                        config.getBean(), new FileOutputStream(new File(outputFileBasePath, config.getFileName())));
 
         super.open(checkpoint);
     }

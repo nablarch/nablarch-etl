@@ -3,7 +3,6 @@ package nablarch.etl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,9 +17,6 @@ import nablarch.common.dao.DatabaseUtil;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
-import nablarch.core.repository.SystemRepository;
-import nablarch.core.repository.di.DiContainer;
-import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
@@ -115,27 +111,6 @@ public class EtlUtilTest {
             fail();
         } catch (Exception e) {
             assertThat(e.getMessage(), is("key is required. jobId = [job], stepId = [step]"));
-        }
-    }
-
-    @Test
-    public void testVerifyAndGetCommonSetting() throws Exception {
-        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.load(container);
-
-        assertThat(EtlUtil.verifyAndGetCommonSetting("inputFileBasePath"), is(new File("base/input")));
-
-        SystemRepository.clear();
-    }
-
-    @Test
-    public void testVerifyAndGetCommonSettingError() throws Exception {
-        try {
-            EtlUtil.verifyAndGetCommonSetting("inputFileBasePath");
-            fail("落ちるはず。");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), is("inputFileBasePath is required. check the config file."));
         }
     }
 

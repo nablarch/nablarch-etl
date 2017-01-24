@@ -36,17 +36,14 @@ public class EtlConfigProviderTest {
 
     /**
      * 設定ファイルを読み込み、設定内容を取得できること。
+     * ジョブ設定が複数ある場合でも読み込めること。
      */
     @Test
     public void testNormal() {
 
-        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
-        DiContainer container = new DiContainer(loader);
-        SystemRepository.load(container);
-
         RootConfig config = EtlConfigProvider.getConfig();
 
-        // ジョブ設定でファイルパスをオーバーライドしてない場合
+        // ジョブ設定１
 
         FileToDbStepConfig job1Step1 = config.getStepConfig("job1", "step1");
 
@@ -74,17 +71,17 @@ public class EtlConfigProviderTest {
         assertThat(job1Step3.getBean().getName(), is(TestDto3.class.getName()));
         assertThat(job1Step3.getFileName(), is("test-output.csv"));
 
-        // ジョブ設定でファイルパスをオーバーライドした場合
+        // ジョブ設定２
 
-        FileToDbStepConfig overrideStep1 = config.getStepConfig("override-base-path", "step1");
+        FileToDbStepConfig job2Step1 = config.getStepConfig("job2", "step1");
 
-        assertThat(overrideStep1, is(notNullValue()));
-        assertThat(overrideStep1.getFileName(), is("test-input.csv"));
+        assertThat(job2Step1, is(notNullValue()));
+        assertThat(job2Step1.getFileName(), is("test-input.csv"));
 
-        DbToFileStepConfig overrideStep3 = config.getStepConfig("override-base-path", "step3");
+        DbToFileStepConfig job2Step3 = config.getStepConfig("job2", "step3");
 
-        assertThat(overrideStep3, is(notNullValue()));
-        assertThat(overrideStep3.getFileName(), is("test-output.csv"));
+        assertThat(job2Step3, is(notNullValue()));
+        assertThat(job2Step3.getFileName(), is("test-output.csv"));
 
         SystemRepository.clear();
     }

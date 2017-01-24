@@ -13,9 +13,9 @@ import javax.inject.Named;
 
 import nablarch.common.databind.ObjectMapper;
 import nablarch.common.databind.ObjectMapperFactory;
-import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.PathConfig;
 import nablarch.etl.config.RootConfig;
 
 /**
@@ -42,10 +42,10 @@ public class FileItemReader extends AbstractItemReader {
     @Inject
     private RootConfig etlConfig;
 
-    /** 共通設定 */
-    @EtlConfig
+    /** 入力ファイルのベースパス */
+    @PathConfig("inputFileBasePath")
     @Inject
-    private CommonConfig commonConfig;
+    private File inputFileBasePath;
 
     /** データからJavaオブジェクトに変換を行うマッパー */
     private ObjectMapper<?> reader;
@@ -65,7 +65,7 @@ public class FileItemReader extends AbstractItemReader {
         EtlUtil.verifyRequired(jobId, stepId, "fileName", config.getFileName());
 
         reader = ObjectMapperFactory.create(
-                    config.getBean(), new FileInputStream(new File(commonConfig.getInputFileBasePath(), config.getFileName())));
+                    config.getBean(), new FileInputStream(new File(inputFileBasePath, config.getFileName())));
     }
 
     @Override

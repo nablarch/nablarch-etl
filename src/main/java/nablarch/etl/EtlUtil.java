@@ -1,6 +1,5 @@
 package nablarch.etl;
 
-import java.io.File;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +11,6 @@ import java.util.TreeMap;
 import nablarch.common.dao.DatabaseUtil;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
-import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.StringUtil;
 import nablarch.core.util.annotation.Published;
 import nablarch.etl.config.DbToDbStepConfig;
@@ -124,14 +122,5 @@ public final class EtlUtil {
                             + "ex) \"where line_number between ? and ?\" "
                             + "sqlId = [" + config.getSqlId() + "]");
         }
-    }
-
-    public static File verifyAndGetCommonSetting(String key) {
-        String path = SystemRepository.getString(key);
-        if (path == null) {
-            throw new IllegalArgumentException(key + " is required. check the config file.");
-        }
-
-        return new File(path);
     }
 }

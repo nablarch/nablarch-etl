@@ -3,7 +3,6 @@ package nablarch.etl.config;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -21,7 +21,7 @@
         }
       }
     },
-    "override-base-path" : {
+    "job2" : {
       "steps": {
         "step1": {
           "type": "file2db",

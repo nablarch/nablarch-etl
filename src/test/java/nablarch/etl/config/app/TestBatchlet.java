@@ -14,11 +14,11 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.ConfigIntegrationTest;
 import nablarch.etl.config.DbToFileStepConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.PathConfig;
 import nablarch.etl.config.RootConfig;
 
 /**
@@ -38,9 +38,21 @@ public class TestBatchlet extends AbstractBatchlet {
     @Inject
     private RootConfig etlConfig;
 
-    @EtlConfig
+    @PathConfig("inputFileBasePath")
     @Inject
-    private CommonConfig commonConfig;
+    private File inputFileBasePath;
+
+    @PathConfig("outputFileBasePath")
+    @Inject
+    private File outputFileBasePath;
+
+    @PathConfig("sqlLoaderControlFileBasePath")
+    @Inject
+    private File sqlLoaderControlFileBasePath;
+
+    @PathConfig("sqlLoaderOutputFileBasePath")
+    @Inject
+    private File sqlLoaderOutputFileBasePath;
 
     @Override
     public String process() {
@@ -53,10 +65,10 @@ public class TestBatchlet extends AbstractBatchlet {
             FileToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto.class.getName()));
-            assertThat(commonConfig.getInputFileBasePath(), is(new File("base/input")));
+            assertThat(inputFileBasePath, is(new File("base/input")));
             assertThat(config.getFileName(), is("test-input.csv"));
-            assertThat(commonConfig.getSqlLoaderControlFileBasePath(), is(new File("base/control")));
-            assertThat(commonConfig.getSqlLoaderOutputFileBasePath(), is(new File("base/log")));
+            assertThat(sqlLoaderControlFileBasePath, is(new File("base/control")));
+            assertThat(sqlLoaderOutputFileBasePath, is(new File("base/log")));
 
         } else if ("step3".equals(stepId)) {
 
@@ -64,7 +76,7 @@ public class TestBatchlet extends AbstractBatchlet {
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto3.class.getName()));
             assertThat(config.getSqlId(), is("SELECT_TEST3"));
-            assertThat(commonConfig.getOutputFileBasePath(), is(new File("base/output")));
+            assertThat(outputFileBasePath, is(new File("base/output")));
             assertThat(config.getFileName(), is("test-output.csv"));
 
         } else {

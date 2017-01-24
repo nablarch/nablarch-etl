@@ -2,9 +2,9 @@ package nablarch.etl;
 
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.FileUtil;
-import nablarch.etl.config.CommonConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.PathConfig;
 import nablarch.etl.config.RootConfig;
 
 import javax.batch.api.AbstractBatchlet;
@@ -49,10 +49,20 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
     @Inject
     private RootConfig etlConfig;
 
-    /** 共通設定 */
-    @EtlConfig
+    /** 入力ファイルのベースパス */
+    @PathConfig("inputFileBasePath")
     @Inject
-    private CommonConfig commonConfig;
+    private File inputFileBasePath;
+
+    /** SQLLoaderに使用するコントロールファイルのベースパス */
+    @PathConfig("sqlLoaderControlFileBasePath")
+    @Inject
+    private File sqlLoaderControlFileBasePath;
+
+    /** SQLLoaderが出力するファイルのベースパス */
+    @PathConfig("sqlLoaderOutputFileBasePath")
+    @Inject
+    private File sqlLoaderOutputFileBasePath;
 
     /**
      * SQL*Loaderを実行してCSVファイルのデータをワークテーブルに一括登録する。
@@ -75,11 +85,9 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
         EtlUtil.verifyRequired(jobId, stepId, "fileName", config.getFileName());
         EtlUtil.verifyRequired(jobId, stepId, "bean", config.getBean());
 
-        final File sqlLoaderOutputFileBasePath = commonConfig.getSqlLoaderOutputFileBasePath();
-
         final String ctlFileName = config.getBean().getSimpleName();
-        final String ctlFile = new File(commonConfig.getSqlLoaderControlFileBasePath(), ctlFileName + ".ctl").getPath();
-        final String dataFile = new File(commonConfig.getInputFileBasePath().getPath(), config.getFileName()).getPath();
+        final String ctlFile = new File(sqlLoaderControlFileBasePath, ctlFileName + ".ctl").getPath();
+        final String dataFile = new File(inputFileBasePath, config.getFileName()).getPath();
         final String badFile = new File(sqlLoaderOutputFileBasePath, ctlFileName + ".bad").getPath();
         final String logFile = new File(sqlLoaderOutputFileBasePath, ctlFileName + ".log").getPath();
 
