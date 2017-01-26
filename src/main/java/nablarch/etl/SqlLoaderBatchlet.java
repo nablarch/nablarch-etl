@@ -50,17 +50,17 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
     private RootConfig etlConfig;
 
     /** 入力ファイルのベースパス */
-    @PathConfig("inputFileBasePath")
+    @PathConfig(BasePath.INPUT)
     @Inject
     private File inputFileBasePath;
 
     /** SQLLoaderに使用するコントロールファイルのベースパス */
-    @PathConfig("sqlLoaderControlFileBasePath")
+    @PathConfig(BasePath.SQLLOADER_CONTROL)
     @Inject
     private File sqlLoaderControlFileBasePath;
 
     /** SQLLoaderが出力するファイルのベースパス */
-    @PathConfig("sqlLoaderOutputFileBasePath")
+    @PathConfig(BasePath.SQLLOADER_OUTPUT)
     @Inject
     private File sqlLoaderOutputFileBasePath;
 

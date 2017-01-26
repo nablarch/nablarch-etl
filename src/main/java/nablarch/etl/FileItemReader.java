@@ -43,7 +43,7 @@ public class FileItemReader extends AbstractItemReader {
     private RootConfig etlConfig;
 
     /** 入力ファイルのベースパス */
-    @PathConfig("inputFileBasePath")
+    @PathConfig(BasePath.INPUT)
     @Inject
     private File inputFileBasePath;
 

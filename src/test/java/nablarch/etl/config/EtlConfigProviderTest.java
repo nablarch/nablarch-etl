@@ -7,8 +7,6 @@ import static org.junit.Assert.assertThat;
 
 import mockit.Deencapsulation;
 import nablarch.core.repository.SystemRepository;
-import nablarch.core.repository.di.DiContainer;
-import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.etl.config.app.TestDto;
 import nablarch.etl.config.app.TestDto2;
 import nablarch.etl.config.app.TestDto3;

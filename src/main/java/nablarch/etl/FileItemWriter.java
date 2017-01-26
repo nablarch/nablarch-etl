@@ -43,7 +43,7 @@ public class FileItemWriter extends AbstractItemWriter {
     private RootConfig etlConfig;
 
     /** 出力ファイルのベースパス */
-    @PathConfig("outputFileBasePath")
+    @PathConfig(BasePath.OUTPUT)
     @Inject
     private File outputFileBasePath;
 

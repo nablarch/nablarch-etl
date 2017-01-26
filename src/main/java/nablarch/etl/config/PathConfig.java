@@ -1,6 +1,7 @@
 package nablarch.etl.config;
 
 import nablarch.core.util.annotation.Published;
+import nablarch.etl.BasePath;
 
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
@@ -15,12 +16,13 @@ import java.lang.annotation.Target;
  * <b>使用例</b>
  * <pre>
  * //ベースパス指定
- * {@code @PathConfig("inputFileBasePath")}
+ * {@code @PathConfig(BasePath.INPUT)}
  * {@code @Inject}
  * private File inputFileBasePath
  * </pre>
  * </p>
- * ベースパスの設定は{@link BasePathProvider}を参照する。
+ * ベースパスの設定は{@link BasePathProducer}を参照する。
+ * ベースパスのキーを定義したEnumは{@link BasePath}を参照する。
  *
  * @author TIS
  */
@@ -29,5 +31,8 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Published(tag = "architect")
 public @interface PathConfig {
-    @Nonbinding String value() default "";
+    /** ベースパスのキーを定義したEnum
+     *  @return Enumオブジェクト
+     */
+    @Nonbinding BasePath value() default BasePath.DEFAULT;
 }

@@ -7,27 +7,21 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import java.io.File;
 
 /**
- * 共通項目設定をシステムリポジトリから取得するプロバイダー。
+ * ベースパスをシステムリポジトリから取得するクラス。
  *
  * @author TIS
  */
-public final class BasePathProvider {
-
-    /**
-     * 隠蔽コンストラクタ
-     */
-    private BasePathProvider() {
-    }
+public final class BasePathProducer {
 
     /**
      * システムリポジトリからベースパスを検証し、取得する。
      * @param key ベースパスのキー
      * @return ベースパスのファイル
      */
-    private static File verifyAndGetBasePath(String key) {
+    private File verifyAndGetBasePath(String key) {
         String path = SystemRepository.getString(key);
         if (path == null) {
-            throw new IllegalStateException(key + " is not found. Check the config file.");
+            throw new IllegalArgumentException(key + " is not found. Check the config file.");
         }
 
         return new File(path);
@@ -43,9 +37,9 @@ public final class BasePathProvider {
      */
     @PathConfig
     @Produces
-    public static File getPathConfig(InjectionPoint injectionPoint) {
+    public File getPathConfig(InjectionPoint injectionPoint) {
         PathConfig config = injectionPoint.getAnnotated().getAnnotation(PathConfig.class);
-        String key = config.value();
+        String key = config.value().getKey();
 
         return verifyAndGetBasePath(key);
     }

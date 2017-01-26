@@ -14,6 +14,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nablarch.etl.BasePath;
 import nablarch.etl.config.ConfigIntegrationTest;
 import nablarch.etl.config.DbToFileStepConfig;
 import nablarch.etl.config.EtlConfig;
@@ -38,19 +39,19 @@ public class TestBatchlet extends AbstractBatchlet {
     @Inject
     private RootConfig etlConfig;
 
-    @PathConfig("inputFileBasePath")
+    @PathConfig(BasePath.INPUT)
     @Inject
     private File inputFileBasePath;
 
-    @PathConfig("outputFileBasePath")
+    @PathConfig(BasePath.OUTPUT)
     @Inject
     private File outputFileBasePath;
 
-    @PathConfig("sqlLoaderControlFileBasePath")
+    @PathConfig(BasePath.SQLLOADER_CONTROL)
     @Inject
     private File sqlLoaderControlFileBasePath;
 
-    @PathConfig("sqlLoaderOutputFileBasePath")
+    @PathConfig(BasePath.SQLLOADER_OUTPUT)
     @Inject
     private File sqlLoaderOutputFileBasePath;
 
