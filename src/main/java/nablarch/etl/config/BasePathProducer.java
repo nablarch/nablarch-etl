@@ -1,6 +1,7 @@
 package nablarch.etl.config;
 
 import nablarch.core.repository.SystemRepository;
+import nablarch.etl.BasePath;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -35,7 +36,7 @@ public final class BasePathProducer {
      * @param injectionPoint インジェクションポイント
      * @return ベースパスのファイル
      */
-    @PathConfig
+    @PathConfig(BasePath.INPUT)
     @Produces
     public File getPathConfig(InjectionPoint injectionPoint) {
         PathConfig config = injectionPoint.getAnnotated().getAnnotation(PathConfig.class);

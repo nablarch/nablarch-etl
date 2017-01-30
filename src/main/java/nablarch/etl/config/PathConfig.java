@@ -34,5 +34,5 @@ public @interface PathConfig {
     /** ベースパスのキーを定義したEnum
      *  @return Enumオブジェクト
      */
-    @Nonbinding BasePath value() default BasePath.DEFAULT;
+    @Nonbinding BasePath value();
 }

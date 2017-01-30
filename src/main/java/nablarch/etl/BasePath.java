@@ -9,8 +9,6 @@ import nablarch.core.util.annotation.Published;
  */
 @Published(tag = "architect")
 public enum BasePath {
-    /** ベースパスのデフォルト値 */
-    DEFAULT(""),
     /** 入力ファイルのベースパス */
     INPUT("inputFileBasePath"),
     /** 出力ファイルのベースパス */
