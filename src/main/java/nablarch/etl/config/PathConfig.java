@@ -21,9 +21,11 @@ import java.lang.annotation.Target;
  * private File inputFileBasePath
  * </pre>
  * </p>
- * ベースパスの設定は{@link BasePathProducer}を参照する。
- * ベースパスのキーを定義したEnumは{@link BasePath}を参照する。
+ * ベースパスの設定は{@link BasePathProducer}を参照。
+ * ベースパスのキーを定義したEnumは{@link BasePath}を参照。
  *
+ * @see BasePathProducer
+ * @see BasePath
  * @author TIS
  */
 @Qualifier
@@ -31,8 +33,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Published(tag = "architect")
 public @interface PathConfig {
-    /** ベースパスのキーを定義したEnum
-     *  @return Enumオブジェクト
+    /**
+     * ベースパスのキーを定義したEnum。
+     *
+     * @return Enumオブジェクト
      */
     @Nonbinding BasePath value();
 }
