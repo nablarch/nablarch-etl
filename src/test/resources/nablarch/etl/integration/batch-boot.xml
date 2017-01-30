@@ -4,6 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration http://tis.co.jp/nablarch/component-configuration">
 
+  <config-file file="nablarch/etl/integration/integration-setting.config" />
   <config-file file="nablarch/etl/integration/db.config" />
 
   <import file="nablarch/etl/integration/db.xml" />

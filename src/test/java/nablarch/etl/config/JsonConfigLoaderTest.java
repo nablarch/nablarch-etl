@@ -4,27 +4,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
  * {@link JsonConfigLoader}のテスト。
  */
 public class JsonConfigLoaderTest {
-
-    /**
-     * デフォルトのパスに配置した設定ファイルがロードできること。
-     */
-    @Test
-    public void testDefaultPath() {
-
-        JsonConfigLoader sut = new JsonConfigLoader();
-
-        RootConfig config = sut.load();
-
-        assertThat(config.getInputFileBasePath(), is(new File("base/input")));
-    }
 
     /**
      * 指定されたパスに配置された設定ファイルがロードできること。
@@ -37,7 +23,7 @@ public class JsonConfigLoaderTest {
 
         RootConfig config = sut.load();
 
-        assertThat(config.getInputFileBasePath(), is(new File("specified/input")));
+        assertThat(config.getJobs(), Matchers.hasKey("test"));
     }
 
     /**
@@ -66,6 +52,22 @@ public class JsonConfigLoaderTest {
             fail();
         } catch (IllegalStateException e) {
             assertThat(e.getMessage(), is("failed to load etl config file. file = [nablarch/etl/config/etl-error.json]"));
+        }
+    }
+
+    /**
+     * 共通項目の設定がjsonファイルにあると例外を送出すること。
+     */
+    @Test
+    public void testLoadingCommonSetting() throws Exception {
+        JsonConfigLoader sut = new JsonConfigLoader();
+        sut.setConfigPath("nablarch/etl/config/etl-error-common-setting.json");
+
+        try {
+            sut.load();
+            fail();
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage(), is("failed to load etl config file. file = [nablarch/etl/config/etl-error-common-setting.json]"));
         }
     }
 }

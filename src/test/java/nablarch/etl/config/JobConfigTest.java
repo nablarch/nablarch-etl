@@ -3,8 +3,12 @@ package nablarch.etl.config;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import mockit.Expectations;
+import mockit.Mocked;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -12,57 +16,45 @@ import org.junit.Test;
  */
 public class JobConfigTest {
 
-    // 正常な設定値
-    private final String jobId = "job1";
-    private final File inputFileBasePath = new File("/job/input");
-    private final File  outputFileBasePath = new File("/job/output");
-    private final File controlFileBasePath = new File("/job/control");
-    private final File logFileBasePath = new File("/job/log");
+    @Mocked
+    private StepConfig stepConfig;
 
-    private RootConfig config = new RootConfig() {{
-        setInputFileBasePath(new File("/base/input"));
-        setOutputFileBasePath(new File("/base/output"));
-        setSqlLoaderControlFileBasePath(new File("/base/control"));
-        setSqlLoaderOutputFileBasePath(new File("/base/log"));
-    }};
+    private final JobConfig sut = new JobConfig();
 
     /**
-     * {@link JobConfig}でファイルベースパスが指定されない場合、
-     * {@link RootConfig}のファイルベースパスが使われること。
+     * 初期化時に{@link StepConfig#initialize()}が呼ばれていること。
      */
     @Test
-    public void testDefaultFileBasePath() {
+    public void testInitialize() throws Exception {
+        Map<String, StepConfig> steps = new HashMap<String, StepConfig>();
+        steps.put("hoge", stepConfig);
+        sut.setSteps(steps);
 
-        JobConfig sut = new JobConfig() {{
-            setJobId(jobId);
+        new Expectations(){{
+            stepConfig.initialize();
         }};
-        sut.initialize(config);
-
-        assertThat(sut.getInputFileBasePath(), is(new File("/base/input")));
-        assertThat(sut.getOutputFileBasePath(), is(new File("/base/output")));
-        assertThat(sut.getSqlLoaderControlFileBasePath(), is(new File("/base/control")));
-        assertThat(sut.getSqlLoaderOutputFileBasePath(), is(new File("/base/log")));
+        sut.initialize();
     }
 
     /**
-     * {@link JobConfig}でファイルベースパスが指定された場合、
-     * {@link RootConfig}のファイルベースパスが使われないこと。
+     * ジョブIDが設定されていること。
      */
     @Test
-    public void testOverrideFileBasePath() {
+    public void testJobId() throws Exception {
+        sut.setJobId("hoge");
 
-        JobConfig sut = new JobConfig() {{
-            setJobId(jobId);
-            setInputFileBasePath(inputFileBasePath);
-            setOutputFileBasePath(outputFileBasePath);
-            setSqlLoaderControlFileBasePath(controlFileBasePath);
-            setSqlLoaderOutputFileBasePath(logFileBasePath);
-        }};
-        sut.initialize(config);
+        assertThat(sut.getJobId(), is("hoge"));
+    }
 
-        assertThat(sut.getInputFileBasePath(), is(new File("/job/input")));
-        assertThat(sut.getOutputFileBasePath(), is(new File("/job/output")));
-        assertThat(sut.getSqlLoaderControlFileBasePath(), is(new File("/job/control")));
-        assertThat(sut.getSqlLoaderOutputFileBasePath(), is(new File("/job/log")));
+    /**
+     * {@link StepConfig}が設定されていること。
+     */
+    @Test
+    public void testSteps() throws Exception {
+        Map<String, StepConfig> steps = new HashMap<String, StepConfig>();
+        steps.put("hoge", stepConfig);
+        sut.setSteps(steps);
+
+        assertThat(sut.getSteps(), Matchers.hasEntry("hoge", stepConfig));
     }
 }

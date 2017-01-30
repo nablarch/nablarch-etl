@@ -1,8 +1,4 @@
 {
-  "inputFileBasePath": "testdata/input",
-  "outputFileBasePath": "testdata/output",
-  "sqlLoaderControlFileBasePath": "testdata/sqlloader/control",
-  "sqlLoaderOutputFileBasePath": "testdata/sqlloader/output",
   "jobs": {
     "singlefile2singletable": {
       "steps": {

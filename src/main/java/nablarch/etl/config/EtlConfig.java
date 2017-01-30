@@ -20,8 +20,9 @@ import javax.inject.Qualifier;
  * private RootConfig etlConfig;
  * </pre>
  * </p>
- * ETLの設定は{@link RootConfig}を参照する。
+ * ETLの設定は{@link RootConfig}を参照。
  *
+ * @see RootConfig
  * @author Kiyohito Itoh
  */
 @Qualifier

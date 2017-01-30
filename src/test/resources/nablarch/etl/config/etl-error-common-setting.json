@@ -1,6 +1,7 @@
 {
+  "sqlLoaderControlFileBasePath": "base/control",
   "jobs": {
-    "test" {
+    "test": {
       "steps": {
         "step1": {
           "type": "file2db",

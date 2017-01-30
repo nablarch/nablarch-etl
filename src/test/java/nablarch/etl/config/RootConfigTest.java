@@ -5,11 +5,15 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import nablarch.core.repository.SystemRepository;
+import nablarch.core.repository.di.DiContainer;
+import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -17,29 +21,16 @@ import org.junit.Test;
  */
 public class RootConfigTest {
 
-    // 正常な設定値
-    private final File inputFileBasePath = new File("/base/input");
-    private final File outputFileBasePath = new File("/base/output");
-    private final File sqlLoaderControlFileBasePath = new File("/base/control");
-    private final File sqlLoaderOutputFileBasePath = new File("/base/log");
+    @Before
+    public void setUp() {
+        XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
+        DiContainer container = new DiContainer(loader);
+        SystemRepository.load(container);
+    }
 
-    /**
-     * 正常に設定された場合、値が取得できること。
-     */
-    @Test
-    public void testNormalSetting() {
-
-        RootConfig sut = new RootConfig() {{
-            setInputFileBasePath(inputFileBasePath);
-            setOutputFileBasePath(outputFileBasePath);
-            setSqlLoaderControlFileBasePath(sqlLoaderControlFileBasePath);
-            setSqlLoaderOutputFileBasePath(sqlLoaderOutputFileBasePath);
-        }};
-
-        assertThat(sut.getInputFileBasePath(), is(new File("/base/input")));
-        assertThat(sut.getOutputFileBasePath(), is(new File("/base/output")));
-        assertThat(sut.getSqlLoaderControlFileBasePath(), is(new File("/base/control")));
-        assertThat(sut.getSqlLoaderOutputFileBasePath(), is(new File("/base/log")));
+    @After
+    public void tearDown() {
+        SystemRepository.clear();
     }
 
     /**
@@ -72,10 +63,6 @@ public class RootConfigTest {
         }};
 
         RootConfig sut = new RootConfig() {{
-            setInputFileBasePath(inputFileBasePath);
-            setOutputFileBasePath(outputFileBasePath);
-            setSqlLoaderControlFileBasePath(sqlLoaderControlFileBasePath);
-            setSqlLoaderOutputFileBasePath(sqlLoaderOutputFileBasePath);
             setJobs(jobs);
         }};
         sut.initialize();
@@ -136,10 +123,6 @@ public class RootConfigTest {
         }};
 
         RootConfig sut = new RootConfig() {{
-            setInputFileBasePath(inputFileBasePath);
-            setOutputFileBasePath(outputFileBasePath);
-            setSqlLoaderControlFileBasePath(sqlLoaderControlFileBasePath);
-            setSqlLoaderOutputFileBasePath(sqlLoaderOutputFileBasePath);
             setJobs(jobs);
         }};
         sut.initialize();

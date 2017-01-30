@@ -13,9 +13,6 @@ public abstract class StepConfig {
     /** ステップID */
     private String stepId;
 
-    /** ジョブの設定 */
-    private JobConfig jobConfig;
-
     /**
      * ステップIDを取得する。
      * @return ステップID
@@ -33,19 +30,9 @@ public abstract class StepConfig {
     }
 
     /**
-     * ジョブの設定を取得する。
-     * @return ジョブの設定
-     */
-    public JobConfig getJobConfig() {
-        return jobConfig;
-    }
-
-    /**
      * 設定値から初期化を行う。
-     * @param jobConfig ジョブの設定
      */
-    public final void initialize(JobConfig jobConfig) {
-        this.jobConfig = jobConfig;
+    public final void initialize() {
         onInitialize();
     }
 

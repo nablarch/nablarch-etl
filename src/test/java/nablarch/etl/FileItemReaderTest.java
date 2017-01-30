@@ -20,7 +20,6 @@ import mockit.Mocked;
 import nablarch.common.databind.csv.Csv;
 import nablarch.core.repository.SystemRepository;
 import nablarch.etl.config.FileToDbStepConfig;
-import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.RootConfig;
 
 import org.junit.After;
@@ -52,9 +51,6 @@ public class FileItemReaderTest {
     @Mocked
     private FileToDbStepConfig mockFileToDbStepConfig;
 
-    @Mocked
-    private JobConfig mockJobConfig;
-
     @Before
     public void setUp() {
 
@@ -85,7 +81,7 @@ public class FileItemReaderTest {
 
         final File file = tempDir.newFile();
 
-        // bean 
+        // bean
 
         new Expectations() {{
             mockFileToDbStepConfig.getBean();
@@ -99,33 +95,11 @@ public class FileItemReaderTest {
             assertThat(e.getMessage(), is("bean is required. jobId = [test-job], stepId = [test-step]"));
         }
 
-        // inputFileBasePath
-
-        new Expectations() {{
-            mockFileToDbStepConfig.getBean();
-            result = CsvFile.class;
-            mockFileToDbStepConfig.getJobConfig();
-            result = mockJobConfig;
-            mockJobConfig.getInputFileBasePath();
-            result = null;
-        }};
-
-        try {
-            sut.open(null);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage(), is("inputFileBasePath is required. jobId = [test-job], stepId = [test-step]"));
-        }
-
         // fileName
 
         new Expectations() {{
             mockFileToDbStepConfig.getBean();
             result = CsvFile.class;
-            mockFileToDbStepConfig.getJobConfig();
-            result = mockJobConfig;
-            mockJobConfig.getInputFileBasePath();
-            result = file;
             mockFileToDbStepConfig.getFileName();
             result = null;
         }};
@@ -146,7 +120,9 @@ public class FileItemReaderTest {
     public void readFile() throws Exception {
 
         // -------------------------------------------------- setup file
-        final File file = tempDir.newFile();
+        final File inputFileBasePath = tempDir.newFolder();
+        final File file = new File(inputFileBasePath, "dummy");
+        Deencapsulation.setField(sut, "inputFileBasePath", inputFileBasePath);
         final BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
         br.write("1,なまえ1\r\n");
         br.write("2,なまえ2\r\n");
@@ -160,8 +136,6 @@ public class FileItemReaderTest {
             result = CsvFile.class;
             mockFileToDbStepConfig.getFileName();
             result = "dummy";
-            mockFileToDbStepConfig.getFile();
-            result = file;
         }};
 
         sut.open(null);
@@ -198,7 +172,9 @@ public class FileItemReaderTest {
     @Test(expected = RuntimeException.class)
     public void close() throws Exception {
         // -------------------------------------------------- setup file
-        final File file = tempDir.newFile();
+        final File inputFileBasePath = tempDir.newFolder();
+        final File file = new File(inputFileBasePath, "dummy");
+        Deencapsulation.setField(sut, "inputFileBasePath", inputFileBasePath);
         final BufferedWriter br = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
         br.write("1,なまえ1\r\n");
         br.close();
@@ -209,8 +185,6 @@ public class FileItemReaderTest {
             result = CsvFile.class;
             mockFileToDbStepConfig.getFileName();
             result = "dummy";
-            mockFileToDbStepConfig.getFile();
-            result = file;
         }};
 
         sut.open(null);
@@ -225,14 +199,14 @@ public class FileItemReaderTest {
     @Test(expected = FileNotFoundException.class)
     public void inputFileNotFound() throws Exception {
 
+        final File inputFileBasePath = new File("notfound");
+        Deencapsulation.setField(sut, "inputFileBasePath", inputFileBasePath);
         // -------------------------------------------------- setup objects that is injected
         new Expectations() {{
             mockFileToDbStepConfig.getBean();
             result = CsvFile.class;
             mockFileToDbStepConfig.getFileName();
             result = "dummy";
-            mockFileToDbStepConfig.getFile();
-            result = new File("notfound.file.csv");
         }};
 
         // ファイルが存在しないので、ここで例外が発生する。

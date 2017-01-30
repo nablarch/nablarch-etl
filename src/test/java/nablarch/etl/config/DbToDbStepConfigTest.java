@@ -31,7 +31,6 @@ public class DbToDbStepConfigTest {
         = new SystemRepositoryResource("nablarch/etl/config/empty.xml");
 
     // 正常な設定値
-    private final JobConfig jobConfig = new JobConfig() {{ setJobId("job1"); }};
     private final String stepId = "step1";
     private final Class<?> bean = TestDto.class;
     private final String sqlId = "SELECT_PET";
@@ -57,7 +56,7 @@ public class DbToDbStepConfigTest {
         }};
 
         try {
-            sut.initialize(jobConfig);
+            sut.initialize();
             fail();
         } catch (IllegalStateException e) {
             assertThat(e.getMessage(),
@@ -80,7 +79,7 @@ public class DbToDbStepConfigTest {
             setBean(bean);
             setSqlId(sqlId);
         }};
-        sut.initialize(jobConfig);
+        sut.initialize();
 
         assertThat(sut.getStepId(), is("step1"));
         assertThat(sut.getBean().getName(), is(TestDto.class.getName()));
@@ -114,7 +113,7 @@ public class DbToDbStepConfigTest {
             setUpdateSize(updateSize);
             setInsertMode(InsertMode.ORACLE_DIRECT_PATH);
         }};
-        sut.initialize(jobConfig);
+        sut.initialize();
 
         assertThat(sut.getStepId(), is("step1"));
         assertThat(sut.getBean().getName(), is(TestDto.class.getName()));
