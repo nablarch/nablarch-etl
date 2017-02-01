@@ -14,7 +14,7 @@ import javax.inject.Named;
 import nablarch.common.dao.UniversalDao;
 import nablarch.etl.config.DbInputStepConfig;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 
 /**
  * 指定されたSELECT文を使ってテーブルから取得したレコードの読み込みを行う{@link javax.batch.api.chunk.AbstractItemReader}の実装クラス。
@@ -36,7 +36,7 @@ public class DatabaseItemReader extends AbstractItemReader {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     /** テーブルのデータを格納する変数 */
     private Iterator<?> reader;
@@ -50,7 +50,7 @@ public class DatabaseItemReader extends AbstractItemReader {
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
-        final DbInputStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+        final DbInputStepConfig config = jobConfig.getStepConfig(stepId);
 
         EtlUtil.verifyRequired(jobId, stepId, "bean", config.getBean());
         EtlUtil.verifyRequired(jobId, stepId, "sqlId", config.getSqlId());

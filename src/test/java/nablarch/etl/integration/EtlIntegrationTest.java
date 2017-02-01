@@ -16,7 +16,6 @@ import javax.batch.runtime.BatchRuntime;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import nablarch.etl.config.EtlConfigProvider;
 import nablarch.etl.integration.app.InputFile1Dto;
 import nablarch.etl.integration.app.InputFile2Dto;
 import nablarch.etl.integration.app.OutputTable1Entity;
@@ -67,9 +66,6 @@ public class EtlIntegrationTest {
 
         // init repository
         Deencapsulation.setField(RepositoryInitializer.class, "isInitialized", false);
-
-        // init etl config
-        Deencapsulation.setField(EtlConfigProvider.class, "isInitialized", false);
 
         VariousDbTestHelper.delete(InputFile1WorkTable.class);
         VariousDbTestHelper.delete(InputFile2WorkTable.class);

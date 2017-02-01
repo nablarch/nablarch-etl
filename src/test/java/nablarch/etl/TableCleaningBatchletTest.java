@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +18,7 @@ import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.transaction.TransactionContext;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.TruncateStepConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
@@ -55,13 +54,10 @@ public class TableCleaningBatchletTest {
     TableCleaningBatchlet sut = new TableCleaningBatchlet();
 
     @Mocked
-    JobContext mockJobContext;
-
-    @Mocked
     StepContext mockSteStepContext;
 
     @Mocked
-    RootConfig mockRootConfig;
+    JobConfig mockRootConfig;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -77,12 +73,9 @@ public class TableCleaningBatchletTest {
         DbConnectionContext.setConnection(connection);
 
         new Expectations() {{
-            mockJobContext.getJobName();
-            result = testName.getMethodName() + "_job";
             mockSteStepContext.getStepName();
             result = testName.getMethodName() + "_step";
         }};
-        Deencapsulation.setField(sut, mockJobContext);
         Deencapsulation.setField(sut, mockSteStepContext);
         Deencapsulation.setField(sut, mockRootConfig);
 
@@ -117,7 +110,7 @@ public class TableCleaningBatchletTest {
         final TruncateStepConfig truncateStepConfig = new TruncateStepConfig();
         truncateStepConfig.setEntities(Collections.<Class<?>>singletonList(TableCleaningBatchletEntity.class));
         new Expectations() {{
-            mockRootConfig.getStepConfig(mockJobContext.getJobName(), mockSteStepContext.getStepName());
+            mockRootConfig.getStepConfig(mockSteStepContext.getStepName());
             result = truncateStepConfig;
         }};
 
@@ -156,7 +149,7 @@ public class TableCleaningBatchletTest {
         final TruncateStepConfig truncateStepConfig = new TruncateStepConfig();
         truncateStepConfig.setEntities(Arrays.asList(TableCleaningBatchletEntity.class, TableCleaningBatchletEntity2.class));
         new Expectations() {{
-            mockRootConfig.getStepConfig(mockJobContext.getJobName(), mockSteStepContext.getStepName());
+            mockRootConfig.getStepConfig(mockSteStepContext.getStepName());
             result = truncateStepConfig;
         }};
 

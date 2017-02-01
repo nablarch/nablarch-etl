@@ -15,8 +15,8 @@ import nablarch.common.databind.ObjectMapper;
 import nablarch.common.databind.ObjectMapperFactory;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.PathConfig;
-import nablarch.etl.config.RootConfig;
 
 /**
  * 入力ファイルからJavaオブジェクトへ変換を行う{@link javax.batch.api.chunk.ItemReader}実装クラス。
@@ -40,7 +40,7 @@ public class FileItemReader extends AbstractItemReader {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     /** 入力ファイルのベースパス */
     @PathConfig(BasePath.INPUT)
@@ -59,7 +59,7 @@ public class FileItemReader extends AbstractItemReader {
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
-        final FileToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+        final FileToDbStepConfig config = jobConfig.getStepConfig(stepId);
 
         EtlUtil.verifyRequired(jobId, stepId, "bean", config.getBean());
         EtlUtil.verifyRequired(jobId, stepId, "fileName", config.getFileName());

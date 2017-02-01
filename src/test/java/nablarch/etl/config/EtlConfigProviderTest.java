@@ -12,45 +12,44 @@ import nablarch.etl.config.app.TestDto2;
 import nablarch.etl.config.app.TestDto3;
 import nablarch.test.support.SystemRepositoryResource;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.batch.runtime.BatchStatus;
+import javax.batch.runtime.context.JobContext;
+import java.util.Properties;
 
 /**
  * {@link EtlConfigProvider}のテスト
  */
 public class EtlConfigProviderTest {
 
+    EtlConfigProvider sut = new EtlConfigProvider();
+
     @Rule
     public SystemRepositoryResource repositoryResource
         = new SystemRepositoryResource("nablarch/etl/config/sql-loader.xml");
 
-    @Before
-    @After
-    public void eraseConfig() {
-        EtlConfigProvider.isInitialized = false;
-    }
-
     /**
      * 設定ファイルを読み込み、設定内容を取得できること。
-     * ジョブ設定が複数ある場合でも読み込めること。
+     * JobContextのjobIDに紐付いたjsonファイルを読み込めること。
      */
     @Test
     public void testNormal() {
 
-        RootConfig config = EtlConfigProvider.getConfig();
+        Deencapsulation.setField(sut, "jobContext", createJobContext("root-config-test-job1"));
+        JobConfig config = sut.getConfig();
 
         // ジョブ設定１
 
-        FileToDbStepConfig job1Step1 = config.getStepConfig("job1", "step1");
+        FileToDbStepConfig job1Step1 = config.getStepConfig("step1");
 
         assertThat(job1Step1, is(notNullValue()));
         assertThat(job1Step1.getStepId(), is("step1"));
         assertThat(job1Step1.getBean().getName(), is(TestDto.class.getName()));
         assertThat(job1Step1.getFileName(), is("test-input.csv"));
 
-        DbToDbStepConfig job1Step2 = config.getStepConfig("job1", "step2");
+        DbToDbStepConfig job1Step2 = config.getStepConfig("step2");
 
         assertThat(job1Step2, is(notNullValue()));
         assertThat(job1Step2.getStepId(), is("step2"));
@@ -62,24 +61,12 @@ public class EtlConfigProviderTest {
         assertThat(job1Step2.getMergeOnColumns().get(1), is("test22"));
         assertThat(job1Step2.getMergeOnColumns().get(2), is("test23"));
 
-        DbToFileStepConfig job1Step3 = config.getStepConfig("job1", "step3");
+        DbToFileStepConfig job1Step3 = config.getStepConfig("step3");
 
         assertThat(job1Step3, is(notNullValue()));
         assertThat(job1Step3.getStepId(), is("step3"));
         assertThat(job1Step3.getBean().getName(), is(TestDto3.class.getName()));
         assertThat(job1Step3.getFileName(), is("test-output.csv"));
-
-        // ジョブ設定２
-
-        FileToDbStepConfig job2Step1 = config.getStepConfig("job2", "step1");
-
-        assertThat(job2Step1, is(notNullValue()));
-        assertThat(job2Step1.getFileName(), is("test-input.csv"));
-
-        DbToFileStepConfig job2Step3 = config.getStepConfig("job2", "step3");
-
-        assertThat(job2Step3, is(notNullValue()));
-        assertThat(job2Step3.getFileName(), is("test-output.csv"));
 
         SystemRepository.clear();
     }
@@ -94,7 +81,7 @@ public class EtlConfigProviderTest {
         CustomConfigLoader loader = new CustomConfigLoader();
         repositoryResource.addComponent("etlConfigLoader", loader);
 
-        RootConfig actual = EtlConfigProvider.getConfig();
+        JobConfig actual = sut.getConfig();
 
         assertThat(loader.count, is(1));
         assertThat(actual, is(sameInstance(loader.fixedConfig)));
@@ -103,10 +90,10 @@ public class EtlConfigProviderTest {
     public static final class CustomConfigLoader implements EtlConfigLoader {
 
         int count;
-        RootConfig fixedConfig = new RootConfig();
+        JobConfig fixedConfig = new JobConfig();
 
         @Override
-        public RootConfig load() {
+        public JobConfig load() {
             count++;
             return fixedConfig;
         }
@@ -122,8 +109,8 @@ public class EtlConfigProviderTest {
         CustomConfigLoader loader = new CustomConfigLoader();
         repositoryResource.addComponent("etlConfigLoader", loader);
 
-        EtlConfigProvider.getConfig();
-        EtlConfigProvider.getConfig();
+        sut.getConfig();
+        sut.getConfig();
 
         assertThat(loader.count, is(1));
     }
@@ -138,9 +125,58 @@ public class EtlConfigProviderTest {
         CustomConfigLoader loader = new CustomConfigLoader();
         repositoryResource.addComponent("etlConfigLoader", loader);
 
-        Deencapsulation.invoke(EtlConfigProvider.class, "initialize");
-        Deencapsulation.invoke(EtlConfigProvider.class, "initialize");
+        Deencapsulation.invoke(sut, "initialize");
+        Deencapsulation.invoke(sut, "initialize");
 
         assertThat(loader.count, is(1));
+    }
+
+    private JobContext createJobContext(final String jobName) {
+        return new JobContext(){
+            @Override
+            public String getJobName() {
+                return jobName;
+            }
+
+            @Override
+            public Object getTransientUserData() {
+                return null;
+            }
+
+            @Override
+            public void setTransientUserData(Object data) {
+                // NOP
+            }
+
+            @Override
+            public long getInstanceId() {
+                return 0;
+            }
+
+            @Override
+            public long getExecutionId() {
+                return 0;
+            }
+
+            @Override
+            public Properties getProperties() {
+                return null;
+            }
+
+            @Override
+            public BatchStatus getBatchStatus() {
+                return null;
+            }
+
+            @Override
+            public String getExitStatus() {
+                return null;
+            }
+
+            @Override
+            public void setExitStatus(String status) {
+                // NOP
+            }
+        };
     }
 }

@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.TruncateStepConfig;
 
 @Named
@@ -28,7 +28,7 @@ public class TestTruncateBatchlet extends AbstractBatchlet {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     @Override
     public String process() throws Exception {
@@ -36,7 +36,7 @@ public class TestTruncateBatchlet extends AbstractBatchlet {
         String jobId = jobContext.getJobName();
         String stepId = stepContext.getStepName();
 
-        final TruncateStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+        final TruncateStepConfig config = jobConfig.getStepConfig(stepId);
         final List<Class<?>> entities = config.getEntities();
 
         assertThat(entities.size(), is(2));

@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.ValidationStepConfig;
 
 @Named
@@ -27,12 +27,12 @@ public class TestValidationBatchlet extends AbstractBatchlet {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     @Override
     public String process() throws Exception {
-        ValidationStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        ValidationStepConfig config = jobConfig.getStepConfig(
+                stepContext.getStepName());
 
         assertThat(config, is(notNullValue()));
         assertThat(config.getBean()

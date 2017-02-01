@@ -4,8 +4,8 @@ import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.FileUtil;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.PathConfig;
-import nablarch.etl.config.RootConfig;
 
 import javax.batch.api.AbstractBatchlet;
 import javax.batch.runtime.context.JobContext;
@@ -47,7 +47,7 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     /** 入力ファイルのベースパス */
     @PathConfig(BasePath.INPUT)
@@ -80,7 +80,7 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
-        final FileToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+        final FileToDbStepConfig config = jobConfig.getStepConfig(stepId);
 
         EtlUtil.verifyRequired(jobId, stepId, "fileName", config.getFileName());
         EtlUtil.verifyRequired(jobId, stepId, "bean", config.getBean());

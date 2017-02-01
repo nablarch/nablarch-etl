@@ -9,15 +9,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JSON形式のファイルに定義されたETLの設定をロードするクラス。
- * <p>
- * デフォルトでは、"META-INF/etl.json"からロードを行う。
  * 
  * @author Kiyohito Itoh
  */
 public class JsonConfigLoader implements EtlConfigLoader {
 
     /** 設定ファイルのパス */
-    private String configPath = "META-INF/etl.json";
+    private String configPath;
 
     /**
      * 設定ファイルのパスを設定する。
@@ -31,13 +29,13 @@ public class JsonConfigLoader implements EtlConfigLoader {
      * 設定ファイルから設定をロードする。
      */
     @Override
-    public RootConfig load() {
+    public JobConfig load() {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.addMixIn(StepConfig.class, PolymorphicStepConfigMixIn.class);
 
         try {
-            return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), RootConfig.class);
+            return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), JobConfig.class);
         } catch (Exception e) {
             throw new IllegalStateException(
                 String.format("failed to load etl config file. file = [%s]", configPath), e);

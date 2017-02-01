@@ -14,5 +14,5 @@ public interface EtlConfigLoader {
      * ETLの設定をロードする。
      * @return ETLの設定
      */
-    RootConfig load();
+    JobConfig load();
 }

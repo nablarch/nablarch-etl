@@ -22,7 +22,7 @@ import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.db.statement.exception.SqlStatementException;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.etl.config.DbInputStepConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
@@ -53,7 +53,7 @@ public class DatabaseItemReaderTest {
     private StepContext mockStepContext;
 
     @Mocked
-    private RootConfig mockEtlConfig;
+    private JobConfig mockJobConfig;
 
     @Mocked
     private DbInputStepConfig mockDbInputStepConfig;
@@ -80,12 +80,12 @@ public class DatabaseItemReaderTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
+            mockJobConfig.getStepConfig("test-step");
             result = mockDbInputStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
     }
 
     @After

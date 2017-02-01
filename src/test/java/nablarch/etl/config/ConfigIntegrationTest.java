@@ -23,7 +23,6 @@ public class ConfigIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        EtlConfigProvider.isInitialized = false;
         Deencapsulation.setField(RepositoryInitializer.class, "isInitialized", false);
         XmlComponentDefinitionLoader loader = new XmlComponentDefinitionLoader("nablarch/etl/config/config-initialize.xml");
         DiContainer container = new DiContainer(loader);

@@ -17,12 +17,10 @@ import javax.inject.Qualifier;
  * //ETLの設定
  * {@code @EtlConfig}
  * {@code @Inject}
- * private RootConfig etlConfig;
+ * private JobConfig jobConfig;
  * </pre>
  * </p>
- * ETLの設定は{@link RootConfig}を参照。
  *
- * @see RootConfig
  * @author Kiyohito Itoh
  */
 @Qualifier

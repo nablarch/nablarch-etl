@@ -15,15 +15,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nablarch.etl.BasePath;
-import nablarch.etl.config.ConfigIntegrationTest;
 import nablarch.etl.config.DbToFileStepConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.PathConfig;
-import nablarch.etl.config.RootConfig;
+
 
 /**
- * {@link ConfigIntegrationTest}で使用する{@link javax.batch.api.Batchlet}。
+ * {@link nablarch.etl.config.ConfigIntegrationTest}で使用する{@link javax.batch.api.Batchlet}。
  */
 @Named
 @Dependent
@@ -37,7 +37,7 @@ public class TestBatchlet extends AbstractBatchlet {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     @PathConfig(BasePath.INPUT)
     @Inject
@@ -63,7 +63,7 @@ public class TestBatchlet extends AbstractBatchlet {
 
         if ("step1".equals(stepId)) {
 
-            FileToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+            FileToDbStepConfig config = jobConfig.getStepConfig(stepId);
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto.class.getName()));
             assertThat(inputFileBasePath, is(new File("base/input")));
@@ -73,7 +73,7 @@ public class TestBatchlet extends AbstractBatchlet {
 
         } else if ("step3".equals(stepId)) {
 
-            DbToFileStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+            DbToFileStepConfig config = jobConfig.getStepConfig(stepId);
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto3.class.getName()));
             assertThat(config.getSqlId(), is("SELECT_TEST3"));

@@ -20,7 +20,7 @@ import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.InsertMode;
 import nablarch.etl.config.DbToDbStepConfig.UpdateSize;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.generator.InsertSqlGenerator;
 
 /**
@@ -52,7 +52,7 @@ public class DeleteInsertBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     /**
      * 一括登録処理を行う。
@@ -63,8 +63,8 @@ public class DeleteInsertBatchlet extends AbstractBatchlet {
     @Override
     public String process() throws Exception {
 
-        final DbToDbStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        final DbToDbStepConfig config = jobConfig.getStepConfig(
+                stepContext.getStepName());
 
         verify(config);
 

@@ -19,7 +19,7 @@ import nablarch.core.transaction.TransactionContext;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.UpdateSize;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.generator.MergeSqlGenerator;
 
 /**
@@ -45,7 +45,7 @@ public class MergeBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     /** 範囲更新のヘルパークラス */
     @Inject
@@ -65,7 +65,7 @@ public class MergeBatchlet extends AbstractBatchlet {
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
-        final DbToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+        final DbToDbStepConfig config = jobConfig.getStepConfig(stepId);
 
         EtlUtil.verifyRequired(jobId, stepId, "bean", config.getBean());
         EtlUtil.verifyRequired(jobId, stepId, "sqlId", config.getSqlId());

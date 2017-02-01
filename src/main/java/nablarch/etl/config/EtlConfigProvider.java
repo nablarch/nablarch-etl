@@ -1,6 +1,10 @@
 package nablarch.etl.config;
 
+import javax.batch.runtime.context.JobContext;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import nablarch.core.repository.SystemRepository;
 
@@ -10,39 +14,38 @@ import nablarch.core.repository.SystemRepository;
  * デフォルトでは、{@link JsonConfigLoader}を使用してETLの設定をロードする。
  * デフォルトのロード処理を変更したい場合は、{@link EtlConfigLoader}の実装クラスを
  * "etlConfigLoader"という名前でコンポーネント定義に設定して行う。
- * <p>
- * 本クラスのコンストラクタが呼ばれると、ETLの設定をロードし、初期化を行う。
- * 設定のロードは、JVMごとに1度しか行わない。
  * 
  * @author Kiyohito Itoh
  */
+@Named
+@Dependent
 public final class EtlConfigProvider {
 
     /** デフォルトの{@link EtlConfigLoader} */
     private static final EtlConfigLoader DEFAULT_LOADER = new JsonConfigLoader();
 
     /** ETLの設定を初期化済みか否か */
-    static boolean isInitialized = false;
+    private boolean isInitialized;
 
     /** ETLの設定 */
-    private static RootConfig config;
+    private JobConfig config;
 
-    /** インスタンス化防止 */
-    private EtlConfigProvider() {
-    }
+    /** ジョブコンテキスト */
+    @Inject
+    private JobContext jobContext;
 
     /**
-     * ETLの設定を初期化済みかを判定する。
+     * ETLの設定が初期化済みかを判定する。
      * @return 初期化済みの場合は{@code true}
      */
-    private static boolean isInitialized() {
+    private boolean isInitialized() {
         return isInitialized;
     }
 
     /**
      * ETLの設定をロードし、初期化を行う。
      */
-    private static synchronized void initialize() {
+    private synchronized void initialize() {
         if (isInitialized()) {
             return;
         }
@@ -58,8 +61,12 @@ public final class EtlConfigProvider {
      * リポジトリに存在しない場合は{@link JsonConfigLoader}を返す。
      * @return {@link EtlConfigLoader}
      */
-    private static EtlConfigLoader getLoader() {
+    private EtlConfigLoader getLoader() {
         EtlConfigLoader loader = SystemRepository.get("etlConfigLoader");
+        if (loader == null) {
+            ((JsonConfigLoader) DEFAULT_LOADER).setConfigPath("META-INF/batch-config/" + jobContext.getJobName() + ".json");
+        }
+
         return loader != null ? loader : DEFAULT_LOADER;
     }
 
@@ -69,7 +76,7 @@ public final class EtlConfigProvider {
      */
     @EtlConfig
     @Produces
-    public static RootConfig getConfig() {
+    public JobConfig getConfig() {
         if (!isInitialized()) {
             initialize();
         }

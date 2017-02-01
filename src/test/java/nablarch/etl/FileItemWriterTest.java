@@ -22,8 +22,8 @@ import mockit.NonStrictExpectations;
 import nablarch.common.databind.csv.Csv;
 import nablarch.core.repository.SystemRepository;
 import nablarch.etl.config.DbToFileStepConfig;
-import nablarch.etl.config.RootConfig;
 
+import nablarch.etl.config.JobConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +48,7 @@ public class FileItemWriterTest {
     private StepContext mockStepContext;
 
     @Mocked
-    private RootConfig mockEtlConfig;
+    private JobConfig mockJobConfig;
 
     @Mocked
     private DbToFileStepConfig mockDbToFileStepConfig;
@@ -64,12 +64,12 @@ public class FileItemWriterTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
+            mockJobConfig.getStepConfig("test-step");
             result = mockDbToFileStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
     }
 
     @After

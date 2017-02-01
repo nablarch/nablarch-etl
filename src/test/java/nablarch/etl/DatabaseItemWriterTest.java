@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,7 +23,7 @@ import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.db.statement.exception.DuplicateStatementException;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.etl.config.DbToDbStepConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
@@ -47,13 +46,10 @@ public class DatabaseItemWriterTest {
     private final DatabaseItemWriter sut = new DatabaseItemWriter();
 
     @Mocked
-    private JobContext mockJobContext;
-
-    @Mocked
     private StepContext mockStepContext;
 
     @Mocked
-    private RootConfig mockEtlConfig;
+    private JobConfig mockJobConfig;
 
     @Mocked(cascading = false)
     private DbToDbStepConfig mockDbToDbStepConfig;
@@ -166,16 +162,13 @@ public class DatabaseItemWriterTest {
         new Expectations() {{
             mockStepContext.getStepName();
             result = "test-step";
-            mockJobContext.getJobName();
-            result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
+            mockJobConfig.getStepConfig("test-step");
             result = mockDbToDbStepConfig;
             mockDbToDbStepConfig.getBean();
             result = EtlDatabaseItemWriterEntity.class;
         }};
-        Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
 
         sut.open(null);
         OnMemoryLogWriter.assertLogContains("writer.memory", "-INFO- chunk start. table name=[etl_database_item_writer]");

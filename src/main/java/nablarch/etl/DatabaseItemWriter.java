@@ -18,8 +18,9 @@ import nablarch.core.log.LoggerManager;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.StepConfig;
+
 
 /**
  * データベースのテーブルに対してデータを書き込む{@link javax.batch.api.chunk.ItemWriter}実装クラス。
@@ -43,18 +44,18 @@ public class DatabaseItemWriter extends AbstractItemWriter {
     @Inject
     private StepContext stepContext;
 
-    /** ETLの設定 */
+    /** ETL設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     @Override
     public void open(Serializable checkpoint) throws Exception {
-        final StepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
-        if ( config instanceof DbToDbStepConfig ) {
+        final StepConfig config = jobConfig.getStepConfig(
+                stepContext.getStepName());
+        if ( config instanceof DbToDbStepConfig) {
             loggingStartChunk(EntityUtil.getTableName(((DbToDbStepConfig)config).getBean()));
-        } else if ( config instanceof FileToDbStepConfig ) {
+        } else if ( config instanceof FileToDbStepConfig) {
             loggingStartChunk(EntityUtil.getTableName(((FileToDbStepConfig)config).getBean()));
         }
     }

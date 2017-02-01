@@ -17,7 +17,7 @@ import nablarch.etl.config.ConfigIntegrationTest;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.InsertMode;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 
 /**
  * {@link ConfigIntegrationTest}で使用する{@link javax.batch.api.chunk.ItemReader}。
@@ -34,7 +34,7 @@ public class TestItemReader extends AbstractItemReader {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     private boolean once;
 
@@ -47,8 +47,8 @@ public class TestItemReader extends AbstractItemReader {
 
         once = true;
 
-        DbToDbStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        DbToDbStepConfig config = jobConfig.getStepConfig(
+                stepContext.getStepName());
 
         assertThat(config, is(notNullValue()));
         assertThat(config.getBean().getName(), is(TestDto2.class.getName()));

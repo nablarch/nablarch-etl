@@ -1,6 +1,5 @@
 package nablarch.etl.config;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
@@ -34,16 +33,6 @@ public class JobConfigTest {
             stepConfig.initialize();
         }};
         sut.initialize();
-    }
-
-    /**
-     * ジョブIDが設定されていること。
-     */
-    @Test
-    public void testJobId() throws Exception {
-        sut.setJobId("hoge");
-
-        assertThat(sut.getJobId(), is("hoge"));
     }
 
     /**

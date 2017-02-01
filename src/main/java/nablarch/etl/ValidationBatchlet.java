@@ -12,7 +12,7 @@ import nablarch.core.log.LoggerManager;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.core.validation.ee.ValidatorUtil;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.ValidationStepConfig;
 import nablarch.etl.config.ValidationStepConfig.Mode;
 
@@ -64,13 +64,13 @@ public class ValidationBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @Inject
     @EtlConfig
-    private RootConfig rootConfig;
+    private JobConfig rootConfig;
 
     @Override
     public String process() throws Exception {
 
         final ValidationStepConfig stepConfig = rootConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+                stepContext.getStepName());
 
         verifyConfig(stepConfig);
 

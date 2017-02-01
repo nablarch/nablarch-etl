@@ -7,36 +7,14 @@ import nablarch.core.util.annotation.Published;
 
 /**
  * ジョブの設定を保持するクラス。
- * <p>
- * ファイルのベースパスに関する設定項目は、ジョブの設定にて指定がない場合、
- * ETLの設定({@link RootConfig})を使用する。
- * 
+ *
  * @author Kiyohito Itoh
  */
 @Published(tag = "architect")
 public class JobConfig {
 
-    /** ジョブID */
-    private String jobId;
-
     /** ステップの設定。キーはステップID */
     private Map<String, StepConfig> steps = Collections.emptyMap();
-
-    /**
-     * ジョブIDを取得する。
-     * @return ジョブID
-     */
-    public String getJobId() {
-        return jobId;
-    }
-
-    /**
-     * ジョブIDを設定する。
-     * @param jobId ジョブID
-     */
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
-    }
 
     /**
      * ステップの設定を取得する。
@@ -63,6 +41,22 @@ public class JobConfig {
             stepConfig.setStepId(entry.getKey());
             stepConfig.initialize();
         }
+    }
+
+    /**
+     * ステップの設定を取得する。
+     * @param stepId ステップID
+     * @param <T> 取得するコンフィグクラスの型
+     * @return ステップの設定
+     */
+    public <T extends StepConfig> T getStepConfig(String stepId) {
+
+        StepConfig stepConfig = getSteps().get(stepId);
+        if (stepConfig == null) {
+            throw new IllegalStateException(
+                    String.format("step configuration was not found. stepId = [%s]", stepId));
+        }
+        return (T) stepConfig;
     }
 
 }

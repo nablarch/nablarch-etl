@@ -14,7 +14,7 @@ import nablarch.core.db.connection.AppDbConnection;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.statement.SqlPStatement;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.TruncateStepConfig;
 
 /**
@@ -39,13 +39,13 @@ public class TableCleaningBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @Inject
     @EtlConfig
-    private RootConfig rootConfig;
+    private JobConfig rootConfig;
 
 
     @Override
     public String process() throws Exception {
 
-        final TruncateStepConfig config = rootConfig.getStepConfig(jobContext.getJobName(), stepContext.getStepName());
+        final TruncateStepConfig config = rootConfig.getStepConfig(stepContext.getStepName());
         final List<Class<?>> entities = config.getEntities();
 
         final AppDbConnection connection = DbConnectionContext.getConnection();

@@ -18,7 +18,7 @@ import nablarch.etl.config.ConfigIntegrationTest;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.InsertMode;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 
 /**
  * {@link ConfigIntegrationTest}で使用する{@link javax.batch.api.chunk.ItemWriter}。
@@ -35,13 +35,13 @@ public class TestItemWriter extends AbstractItemWriter {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private JobConfig jobConfig;
 
     @Override
     public void writeItems(List<Object> items) throws Exception {
 
-        DbToDbStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        DbToDbStepConfig config = jobConfig.getStepConfig(
+                stepContext.getStepName());
 
         assertThat(config, is(notNullValue()));
         assertThat(config.getBean().getName(), is(TestDto2.class.getName()));

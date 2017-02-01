@@ -24,7 +24,7 @@ import nablarch.core.db.statement.exception.DuplicateStatementException;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.core.transaction.TransactionFactory;
 import nablarch.etl.config.DbToDbStepConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
@@ -63,7 +63,7 @@ public class MergeBatchletTest {
     private StepContext mockStepContext;
 
     @Mocked
-    private RootConfig mockEtlConfig;
+    private JobConfig mockJobConfig;
 
     @Mocked
     private DbToDbStepConfig mockDbToDbStepConfig;
@@ -95,12 +95,12 @@ public class MergeBatchletTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
+            mockJobConfig.getStepConfig("test-step");
             result = mockDbToDbStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
         final RangeUpdateHelper rangeUpdateHelper = new RangeUpdateHelper();
         Deencapsulation.setField(rangeUpdateHelper, mockJobContext);
         Deencapsulation.setField(rangeUpdateHelper, mockStepContext);

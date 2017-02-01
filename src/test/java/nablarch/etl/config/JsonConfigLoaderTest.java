@@ -1,10 +1,10 @@
 package nablarch.etl.config;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -21,9 +21,11 @@ public class JsonConfigLoaderTest {
         JsonConfigLoader sut = new JsonConfigLoader();
         sut.setConfigPath("nablarch/etl/config/etl-normal.json");
 
-        RootConfig config = sut.load();
+        JobConfig config = sut.load();
 
-        assertThat(config.getJobs(), Matchers.hasKey("test"));
+        assertThat(config.getSteps().get("step1"), is(instanceOf(StepConfig.class)));
+        assertThat(config.getSteps().get("step2"), is(instanceOf(StepConfig.class)));
+        assertThat(config.getSteps().get("step3"), is(instanceOf(StepConfig.class)));
     }
 
     /**

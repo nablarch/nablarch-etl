@@ -24,7 +24,7 @@ import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.core.transaction.TransactionFactory;
 import nablarch.core.validation.ee.Domain;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.ValidationStepConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
@@ -77,7 +77,7 @@ public class ValidationBatchletTest {
     ValidationBatchlet sut = new ValidationBatchlet();
 
     @Mocked()
-    RootConfig mockConfig;
+    JobConfig mockConfig;
 
     @Mocked
     JobContext mockJobJobContext;
@@ -104,7 +104,7 @@ public class ValidationBatchletTest {
             result = methodName + "_job";
             mockStepContext.getStepName();
             result = methodName + "_step";
-            mockConfig.getStepConfig(methodName + "_job", methodName + "_step");
+            mockConfig.getStepConfig(methodName + "_step");
             result = stepConfig;
         }};
 
