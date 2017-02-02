@@ -15,6 +15,7 @@ import org.junit.Test;
 import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -38,11 +39,11 @@ public class EtlConfigProviderTest {
             = new SystemRepositoryResource("nablarch/etl/config/sql-loader.xml");
 
     /**
-     * テスト毎に設定をロードするため、キャッシュを破棄する。
+     * テスト毎にキャッシュをクリアする。
      */
     @Before
-    public void setUp() {
-        Deencapsulation.setField(sut, "cacheJobContext", null);
+    public void setUp() throws Exception {
+        Deencapsulation.setField(sut, "cacheJobConfig", new ConcurrentHashMap<String, JobConfig>());
     }
 
     /**
@@ -104,6 +105,8 @@ public class EtlConfigProviderTest {
         repositoryResource.addComponent("etlConfigLoader", loader);
 
         new Expectations() {{
+            mockJobContext.getJobName();
+            result = "jobName";
             mockStepContext.getStepName();
             result = "step";
         }};
@@ -144,6 +147,8 @@ public class EtlConfigProviderTest {
         repositoryResource.addComponent("etlConfigLoader", loader);
 
         new Expectations() {{
+            mockJobContext.getJobName();
+            result = "jobName";
             mockStepContext.getStepName();
             result = "step";
         }};
@@ -155,6 +160,32 @@ public class EtlConfigProviderTest {
     }
 
     /**
+     * 複数ジョブを複数回ロードした場合でも、ジョブ毎に１回のロードだけ行われること。
+     */
+    @Test
+    public void testLoadMultiJobs() throws Exception {
+        CustomConfigLoader loader = new CustomConfigLoader();
+        repositoryResource.addComponent("etlConfigLoader", loader);
+
+        new Expectations() {{
+            mockJobContext.getJobName();
+            result = "root-config-test-job1";
+            result = "job1";
+            result = "root-config-test-job1";
+            result = "job1";
+            mockStepContext.getStepName();
+            result = "step";
+        }};
+
+        sut.getConfig(mockJobContext, mockStepContext);
+        sut.getConfig(mockJobContext, mockStepContext);
+        sut.getConfig(mockJobContext, mockStepContext);
+        sut.getConfig(mockJobContext, mockStepContext);
+
+        assertThat(loader.count, is(2));
+    }
+
+    /**
      * {@link EtlConfigProvider#initialize(JobContext jobContext)}が複数回呼ばれても、
      * 設定のロードが1度だけであること。
      */
@@ -163,6 +194,11 @@ public class EtlConfigProviderTest {
 
         CustomConfigLoader loader = new CustomConfigLoader();
         repositoryResource.addComponent("etlConfigLoader", loader);
+
+        new Expectations() {{
+            mockJobContext.getJobName();
+            result = "jobName";
+        }};
 
         Deencapsulation.invoke(sut, "initialize", mockJobContext);
         Deencapsulation.invoke(sut, "initialize", mockJobContext);
