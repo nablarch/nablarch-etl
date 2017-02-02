@@ -1,14 +1,18 @@
 package nablarch.etl.config;
 
-import nablarch.core.util.FileUtil;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nablarch.core.util.FileUtil;
+
+import javax.batch.runtime.context.JobContext;
 
 /**
- * JSON形式のファイルに定義されたETLの設定をロードするクラス。
+ * ジョブIDと同じファイル名のJSON形式のファイルに定義されたETLの設定をロードするクラス。
+ * <p/>
+ * デフォルトでは "META-INF/batch-config/" 配下に置かれた "ジョブID.json" をロードする。
+ * デフォルトから変更したい場合は {@code configPath} を設定したコンポーネントを定義すること。
  * 
  * @author Kiyohito Itoh
  */
@@ -29,10 +33,12 @@ public class JsonConfigLoader implements EtlConfigLoader {
      * 設定ファイルから設定をロードする。
      */
     @Override
-    public JobConfig load() {
-
+    public JobConfig load(JobContext jobContext) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.addMixIn(StepConfig.class, PolymorphicStepConfigMixIn.class);
+        if (configPath == null) {
+            setConfigPath("META-INF/batch-config/" + jobContext.getJobName() + ".json");
+        }
 
         try {
             return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), JobConfig.class);

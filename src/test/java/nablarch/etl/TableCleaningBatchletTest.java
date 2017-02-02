@@ -1,30 +1,16 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.batch.runtime.context.StepContext;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import mockit.Deencapsulation;
+import mockit.Mocked;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.transaction.TransactionContext;
-import nablarch.etl.config.JobConfig;
 import nablarch.etl.config.TruncateStepConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,9 +20,18 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
+import javax.batch.runtime.context.StepContext;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 /**
  * {@link TableCleaningBatchlet}のテストクラス。
@@ -54,10 +49,7 @@ public class TableCleaningBatchletTest {
     TableCleaningBatchlet sut = new TableCleaningBatchlet();
 
     @Mocked
-    StepContext mockSteStepContext;
-
-    @Mocked
-    JobConfig mockRootConfig;
+    StepContext mockStepContext;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -72,12 +64,7 @@ public class TableCleaningBatchletTest {
                 TransactionContext.DEFAULT_TRANSACTION_CONTEXT_KEY);
         DbConnectionContext.setConnection(connection);
 
-        new Expectations() {{
-            mockSteStepContext.getStepName();
-            result = testName.getMethodName() + "_step";
-        }};
-        Deencapsulation.setField(sut, mockSteStepContext);
-        Deencapsulation.setField(sut, mockRootConfig);
+        Deencapsulation.setField(sut, mockStepContext);
 
         OnMemoryLogWriter.clear();
     }
@@ -109,10 +96,7 @@ public class TableCleaningBatchletTest {
         // -------------------------------------------------- setup root config
         final TruncateStepConfig truncateStepConfig = new TruncateStepConfig();
         truncateStepConfig.setEntities(Collections.<Class<?>>singletonList(TableCleaningBatchletEntity.class));
-        new Expectations() {{
-            mockRootConfig.getStepConfig(mockSteStepContext.getStepName());
-            result = truncateStepConfig;
-        }};
+        Deencapsulation.setField(sut, "stepConfig", truncateStepConfig);
 
         // -------------------------------------------------- execute
         sut.process();
@@ -148,10 +132,7 @@ public class TableCleaningBatchletTest {
         // -------------------------------------------------- setup root config
         final TruncateStepConfig truncateStepConfig = new TruncateStepConfig();
         truncateStepConfig.setEntities(Arrays.asList(TableCleaningBatchletEntity.class, TableCleaningBatchletEntity2.class));
-        new Expectations() {{
-            mockRootConfig.getStepConfig(mockSteStepContext.getStepName());
-            result = truncateStepConfig;
-        }};
+        Deencapsulation.setField(sut, "stepConfig", truncateStepConfig);
 
         // -------------------------------------------------- execute
         sut.process();

@@ -1,32 +1,29 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 import nablarch.common.databind.csv.Csv;
 import nablarch.core.repository.SystemRepository;
 import nablarch.etl.config.FileToDbStepConfig;
-
-import nablarch.etl.config.JobConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * {@link FileItemReader}のテストクラス。
@@ -46,9 +43,6 @@ public class FileItemReaderTest {
     private StepContext mockStepContext;
 
     @Mocked
-    private JobConfig mockJobConfig;
-
-    @Mocked
     private FileToDbStepConfig mockFileToDbStepConfig;
 
     @Before
@@ -60,12 +54,10 @@ public class FileItemReaderTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockJobConfig.getStepConfig("test-step");
-            result = mockFileToDbStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
+        Deencapsulation.setField(sut, "stepConfig", mockFileToDbStepConfig);
     }
 
     @After

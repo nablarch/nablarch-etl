@@ -1,19 +1,5 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.batch.runtime.context.StepContext;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -23,18 +9,30 @@ import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.db.statement.exception.DuplicateStatementException;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.etl.config.DbToDbStepConfig;
-import nablarch.etl.config.JobConfig;
+import nablarch.etl.config.FileToDbStepConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.batch.runtime.context.StepContext;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * {@link DatabaseItemWriter}のテストクラス。
@@ -48,11 +46,11 @@ public class DatabaseItemWriterTest {
     @Mocked
     private StepContext mockStepContext;
 
-    @Mocked
-    private JobConfig mockJobConfig;
-
     @Mocked(cascading = false)
     private DbToDbStepConfig mockDbToDbStepConfig;
+
+    @Mocked
+    private FileToDbStepConfig mockFileToDbStepConfig;
 
     @ClassRule
     public static SystemRepositoryResource resource = new SystemRepositoryResource("db-default.xml");
@@ -157,18 +155,31 @@ public class DatabaseItemWriterTest {
      * openメソッドで正しくログが出力されること。
      */
     @Test
-    public void testOpenLog() throws Exception {
+    public void testOpenLogDb() throws Exception {
         // -------------------------------------------------- setup objects that is injected
         new Expectations() {{
-            mockStepContext.getStepName();
-            result = "test-step";
-            mockJobConfig.getStepConfig("test-step");
-            result = mockDbToDbStepConfig;
             mockDbToDbStepConfig.getBean();
             result = EtlDatabaseItemWriterEntity.class;
         }};
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
+        Deencapsulation.setField(sut, "stepConfig", mockDbToDbStepConfig);
+
+        sut.open(null);
+        OnMemoryLogWriter.assertLogContains("writer.memory", "-INFO- chunk start. table name=[etl_database_item_writer]");
+    }
+
+    /**
+     * openメソッドで正しくログが出力されること。
+     */
+    @Test
+    public void testOpenLogFile() throws Exception {
+        // -------------------------------------------------- setup objects that is injected
+        new Expectations() {{
+            mockFileToDbStepConfig.getBean();
+            result = EtlDatabaseItemWriterEntity.class;
+        }};
+        Deencapsulation.setField(sut, "stepContext", mockStepContext);
+        Deencapsulation.setField(sut, "stepConfig", mockFileToDbStepConfig);
 
         sut.open(null);
         OnMemoryLogWriter.assertLogContains("writer.memory", "-INFO- chunk start. table name=[etl_database_item_writer]");

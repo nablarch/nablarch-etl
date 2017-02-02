@@ -7,7 +7,6 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import nablarch.etl.config.FileToDbStepConfig;
-import nablarch.etl.config.JobConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
@@ -57,9 +56,6 @@ public class SqlLoaderBatchletTest {
     private StepContext mockStepContext;
 
     @Mocked
-    private JobConfig mockJobConfig;
-
-    @Mocked
     private FileToDbStepConfig mockFileToDbStepConfig;
 
     @BeforeClass
@@ -84,12 +80,10 @@ public class SqlLoaderBatchletTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockJobConfig.getStepConfig("test-step");
-            result = mockFileToDbStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "jobConfig", mockJobConfig);
+        Deencapsulation.setField(sut, "stepConfig", mockFileToDbStepConfig);
     }
 
     /**
