@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class EtlConfigProvider {
 
     /** ロード済みのETLの設定 */
-    private static Map<String, JobConfig> cacheJobConfig = new ConcurrentHashMap<String, JobConfig>();
+    private static final Map<String, JobConfig> cacheJobConfig = new ConcurrentHashMap<String, JobConfig>();
 
     /**
      * ETLの設定をロードし、初期化とキャッシュを行う。
@@ -56,10 +56,12 @@ public final class EtlConfigProvider {
 
     /**
      * ETLの設定を取得する。
+     * <p/>
+     * ジョブコンテキストとステップコンテキストに対応するステップの設定を取得する。
      *
      * @param jobContext ジョブコンテキスト
      * @param stepContext ステップコンテキスト
-     * @return ETLの設定
+     * @return 実行するステップの設定
      */
     @EtlConfig
     @Produces
