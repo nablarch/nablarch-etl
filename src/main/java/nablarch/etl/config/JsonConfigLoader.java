@@ -9,7 +9,7 @@ import nablarch.core.util.FileUtil;
 import javax.batch.runtime.context.JobContext;
 
 /**
- * ジョブIDと同じファイル名のJSON形式のファイルに定義されたETLの設定をロードするクラス。
+ * JSON形式のファイルに定義されたETLの設定をロードするクラス。
  * <p/>
  * "META-INF/batch-config/" 配下に置かれた "ジョブID.json" をロードする。
  * 

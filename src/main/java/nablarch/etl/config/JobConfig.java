@@ -45,16 +45,17 @@ public class JobConfig {
 
     /**
      * ステップの設定を取得する。
-     * @param stepId ステップID
      * @param <T> 取得するコンフィグクラスの型
+     * @param jobId ジョブID
+     * @param stepId ステップID
      * @return ステップの設定
      */
-    public <T extends StepConfig> T getStepConfig(String stepId) {
+    public <T extends StepConfig> T getStepConfig(String jobId, String stepId) {
 
         StepConfig stepConfig = getSteps().get(stepId);
         if (stepConfig == null) {
             throw new IllegalStateException(
-                    String.format("step configuration was not found. stepId = [%s]", stepId));
+                    String.format("step configuration was not found. jobId = [%s], stepId = [%s]", jobId, stepId));
         }
         return (T) stepConfig;
     }

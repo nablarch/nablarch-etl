@@ -10,19 +10,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ETLの設定を提供するクラス。
- * <p>
+ * <p/>
  * デフォルトでは、{@link JsonConfigLoader}を使用してETLの設定をロードする。
  * デフォルトのロード処理を変更したい場合は、{@link EtlConfigLoader}の実装クラスを
  * "etlConfigLoader"という名前でコンポーネント定義に設定して行う。
- *
- * ロードしたジョブの設定はキャッシュし、同じジョブの場合はキャッシュから返す。
+ * 設定のロードは、JVMごとに1度しか行わない。
  *
  * @author Kiyohito Itoh
  */
 public final class EtlConfigProvider {
 
+    /** デフォルトの{@link EtlConfigLoader} */
+    private static final EtlConfigLoader DEFAULT_LOADER = new JsonConfigLoader();
+
     /** ロード済みのETLの設定 */
-    private static Map<String, JobConfig> cacheJobConfig = new ConcurrentHashMap<String, JobConfig>();
+    private static Map<String, JobConfig> alreadyReadJobConfig = new ConcurrentHashMap<String, JobConfig>();
 
     /**
      * ETLの設定をロードし、初期化とキャッシュを行う。
@@ -31,13 +33,13 @@ public final class EtlConfigProvider {
      * @return ETLの設定
      */
     private synchronized JobConfig initialize(JobContext jobContext) {
-        JobConfig jobConfig = cacheJobConfig.get(jobContext.getJobName());
-        if ( jobConfig != null) {
-            return jobConfig;
+        JobConfig jobConfig = alreadyReadJobConfig.get(jobContext.getJobName());
+        if (jobConfig == null) {
+            jobConfig = getLoader().load(jobContext);
+            jobConfig.initialize();
+            alreadyReadJobConfig.put(jobContext.getJobName(), jobConfig);
         }
-        jobConfig = getLoader().load(jobContext);
-        jobConfig.initialize();
-        cacheJobConfig.put(jobContext.getJobName(), jobConfig);
+
         return jobConfig;
     }
 
@@ -51,7 +53,7 @@ public final class EtlConfigProvider {
     private EtlConfigLoader getLoader() {
         EtlConfigLoader loader = SystemRepository.get("etlConfigLoader");
 
-        return loader != null ? loader : new JsonConfigLoader();
+        return loader != null ? loader : DEFAULT_LOADER;
     }
 
     /**
@@ -64,11 +66,11 @@ public final class EtlConfigProvider {
     @EtlConfig
     @Produces
     public StepConfig getConfig(JobContext jobContext, StepContext stepContext) {
-        JobConfig jobConfig = cacheJobConfig.get(jobContext.getJobName());
+        JobConfig jobConfig = alreadyReadJobConfig.get(jobContext.getJobName());
         if (jobConfig == null) {
             jobConfig = initialize(jobContext);
         }
 
-        return jobConfig.getStepConfig(stepContext.getStepName());
+        return jobConfig.getStepConfig(jobContext.getJobName(), stepContext.getStepName());
     }
 }
