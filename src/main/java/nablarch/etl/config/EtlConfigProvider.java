@@ -24,7 +24,7 @@ public final class EtlConfigProvider {
     private static final EtlConfigLoader DEFAULT_LOADER = new JsonConfigLoader();
 
     /** ロード済みのETLの設定 */
-    private static final Map<String, JobConfig> cacheJobConfig = new ConcurrentHashMap<String, JobConfig>();
+    private static final Map<String, JobConfig> alreadyReadJobConfig = new ConcurrentHashMap<String, JobConfig>();
 
     /**
      * ETLの設定をロードし、初期化とキャッシュを行う。
