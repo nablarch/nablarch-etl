@@ -1,19 +1,21 @@
 package nablarch.etl.config;
 
-import javax.enterprise.inject.Produces;
-
 import nablarch.core.repository.SystemRepository;
+
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.enterprise.inject.Produces;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ETLの設定を提供するクラス。
- * <p>
+ * <p/>
  * デフォルトでは、{@link JsonConfigLoader}を使用してETLの設定をロードする。
  * デフォルトのロード処理を変更したい場合は、{@link EtlConfigLoader}の実装クラスを
  * "etlConfigLoader"という名前でコンポーネント定義に設定して行う。
- * <p>
- * 本クラスのコンストラクタが呼ばれると、ETLの設定をロードし、初期化を行う。
  * 設定のロードは、JVMごとに1度しか行わない。
- * 
+ *
  * @author Kiyohito Itoh
  */
 public final class EtlConfigProvider {
@@ -21,34 +23,23 @@ public final class EtlConfigProvider {
     /** デフォルトの{@link EtlConfigLoader} */
     private static final EtlConfigLoader DEFAULT_LOADER = new JsonConfigLoader();
 
-    /** ETLの設定を初期化済みか否か */
-    static boolean isInitialized = false;
-
-    /** ETLの設定 */
-    private static RootConfig config;
-
-    /** インスタンス化防止 */
-    private EtlConfigProvider() {
-    }
+    /** ロード済みのETLの設定 */
+    private static final Map<String, JobConfig> LOADED_ETL_CONFIG = new ConcurrentHashMap<String, JobConfig>();
 
     /**
-     * ETLの設定を初期化済みかを判定する。
-     * @return 初期化済みの場合は{@code true}
+     * ETLの設定をロードし、初期化とキャッシュを行う。
+     *
+     * @param jobContext ジョブコンテキスト
+     * @return ETLの設定
      */
-    private static boolean isInitialized() {
-        return isInitialized;
-    }
-
-    /**
-     * ETLの設定をロードし、初期化を行う。
-     */
-    private static synchronized void initialize() {
-        if (isInitialized()) {
-            return;
+    private synchronized JobConfig initialize(JobContext jobContext) {
+        JobConfig jobConfig = LOADED_ETL_CONFIG.get(jobContext.getJobName());
+        if (jobConfig == null) {
+            jobConfig = getLoader().load(jobContext);
+            jobConfig.initialize();
+            LOADED_ETL_CONFIG.put(jobContext.getJobName(), jobConfig);
         }
-        config = getLoader().load();
-        config.initialize();
-        isInitialized = true;
+        return jobConfig;
     }
 
     /**
@@ -58,21 +49,28 @@ public final class EtlConfigProvider {
      * リポジトリに存在しない場合は{@link JsonConfigLoader}を返す。
      * @return {@link EtlConfigLoader}
      */
-    private static EtlConfigLoader getLoader() {
+    private EtlConfigLoader getLoader() {
         EtlConfigLoader loader = SystemRepository.get("etlConfigLoader");
         return loader != null ? loader : DEFAULT_LOADER;
     }
 
     /**
      * ETLの設定を取得する。
-     * @return ETLの設定
+     * <p/>
+     * ジョブコンテキストとステップコンテキストに対応するステップの設定を取得する。
+     *
+     * @param jobContext ジョブコンテキスト
+     * @param stepContext ステップコンテキスト
+     * @return 実行するステップの設定
      */
     @EtlConfig
     @Produces
-    public static RootConfig getConfig() {
-        if (!isInitialized()) {
-            initialize();
+    public StepConfig getConfig(JobContext jobContext, StepContext stepContext) {
+        JobConfig jobConfig = LOADED_ETL_CONFIG.get(jobContext.getJobName());
+        if (jobConfig == null) {
+            jobConfig = initialize(jobContext);
         }
-        return config;
+
+        return jobConfig.getStepConfig(jobContext.getJobName(), stepContext.getStepName());
     }
 }

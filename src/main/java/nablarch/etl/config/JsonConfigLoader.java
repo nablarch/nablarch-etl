@@ -1,43 +1,33 @@
 package nablarch.etl.config;
 
-import nablarch.core.util.FileUtil;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nablarch.core.util.FileUtil;
+
+import javax.batch.runtime.context.JobContext;
 
 /**
  * JSON形式のファイルに定義されたETLの設定をロードするクラス。
- * <p>
- * デフォルトでは、"META-INF/etl.json"からロードを行う。
+ * <p/>
+ * "META-INF/batch-config/" 配下に置かれた "ジョブID.json" をロードする。
  * 
  * @author Kiyohito Itoh
  */
 public class JsonConfigLoader implements EtlConfigLoader {
 
-    /** 設定ファイルのパス */
-    private String configPath = "META-INF/etl.json";
-
-    /**
-     * 設定ファイルのパスを設定する。
-     * @param configPath 設定ファイルのパス
-     */
-    public void setConfigPath(String configPath) {
-        this.configPath = configPath;
-    }
-
     /**
      * 設定ファイルから設定をロードする。
      */
     @Override
-    public RootConfig load() {
-
+    public JobConfig load(JobContext jobContext) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.addMixIn(StepConfig.class, PolymorphicStepConfigMixIn.class);
+        String configPath = "META-INF/batch-config/" + jobContext.getJobName() + ".json";
 
         try {
-            return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), RootConfig.class);
+            return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), JobConfig.class);
         } catch (Exception e) {
             throw new IllegalStateException(
                 String.format("failed to load etl config file. file = [%s]", configPath), e);

@@ -1,14 +1,5 @@
 package nablarch.etl;
 
-import java.text.MessageFormat;
-
-import javax.batch.api.AbstractBatchlet;
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import nablarch.common.dao.EntityUtil;
 import nablarch.core.db.connection.AppDbConnection;
 import nablarch.core.db.connection.DbConnectionContext;
@@ -19,8 +10,16 @@ import nablarch.core.transaction.TransactionContext;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.UpdateSize;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.StepConfig;
 import nablarch.etl.generator.MergeSqlGenerator;
+
+import javax.batch.api.AbstractBatchlet;
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.text.MessageFormat;
 
 /**
  * 入力リソース(SELECT文の結果)を出力テーブルにMERGEする{@link javax.batch.api.Batchlet}実装クラス。
@@ -45,7 +44,7 @@ public class MergeBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private StepConfig stepConfig;
 
     /** 範囲更新のヘルパークラス */
     @Inject
@@ -65,7 +64,7 @@ public class MergeBatchlet extends AbstractBatchlet {
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
-        final DbToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+        final DbToDbStepConfig config = (DbToDbStepConfig) stepConfig;
 
         EtlUtil.verifyRequired(jobId, stepId, "bean", config.getBean());
         EtlUtil.verifyRequired(jobId, stepId, "sqlId", config.getSqlId());

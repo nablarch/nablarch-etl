@@ -1,58 +1,77 @@
 package nablarch.etl.config;
 
+import mockit.Expectations;
+import mockit.Mocked;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import javax.batch.runtime.context.JobContext;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import org.hamcrest.Matchers;
-import org.junit.Test;
 
 /**
  * {@link JsonConfigLoader}のテスト。
  */
 public class JsonConfigLoaderTest {
 
+    private JsonConfigLoader sut = new JsonConfigLoader();
+
+    @Mocked
+    JobContext mockJobContext;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     /**
-     * 指定されたパスに配置された設定ファイルがロードできること。
+     * META-INF/batch-config/(JOB_ID).jsonの設定ファイルが読み込まれること。
      */
     @Test
-    public void testSpecifiedPath() {
+    public void testDefaultPath() throws Exception {
+        new Expectations() {{
+            mockJobContext.getJobName();
+            result = "root-config-test-job1";
+        }};
 
-        JsonConfigLoader sut = new JsonConfigLoader();
-        sut.setConfigPath("nablarch/etl/config/etl-normal.json");
+        JobConfig config = sut.load(mockJobContext);
 
-        RootConfig config = sut.load();
-
-        assertThat(config.getJobs(), Matchers.hasKey("test"));
+        assertThat(config.getSteps().get("step1"), is(instanceOf(StepConfig.class)));
+        assertThat(config.getSteps().get("step2"), is(instanceOf(StepConfig.class)));
+        assertThat(config.getSteps().get("step3"), is(instanceOf(StepConfig.class)));
     }
 
     /**
-     * ロードに失敗した場合、例外が送出されること。
+     * ファイルのフォーマットが間違っている場合、例外が送出されること。
      */
     @Test
-    public void testLoadingFailed() {
+    public void testLoadingFailedJsonFileFormatError() {
+        new Expectations(){{
+            mockJobContext.getJobName();
+            result = "etl-error";
+        }};
 
-        // 存在しないパス
-        JsonConfigLoader sut = new JsonConfigLoader();
-        sut.setConfigPath("/hoge/unknown.json");
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("failed to load etl config file. file = [META-INF/batch-config/etl-error.json]");
 
-        try {
-            sut.load();
-            fail();
-        } catch (IllegalStateException e) {
-            assertThat(e.getMessage(), is("failed to load etl config file. file = [/hoge/unknown.json]"));
-        }
+        sut.load(mockJobContext);
+    }
 
-        // フォーマットエラー
-        sut = new JsonConfigLoader();
-        sut.setConfigPath("nablarch/etl/config/etl-error.json");
+    /**
+     * ファイルが見つからない場合、例外が送出されること。
+     */
+    @Test
+    public void testLoadingFailedNotFoundJsonFile() throws Exception {
+        new Expectations(){{
+            mockJobContext.getJobName();
+            result = "unknown";
+        }};
 
-        try {
-            sut.load();
-            fail();
-        } catch (IllegalStateException e) {
-            assertThat(e.getMessage(), is("failed to load etl config file. file = [nablarch/etl/config/etl-error.json]"));
-        }
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("failed to load etl config file. file = [META-INF/batch-config/unknown.json]");
+
+        sut.load(mockJobContext);
     }
 
     /**
@@ -60,14 +79,14 @@ public class JsonConfigLoaderTest {
      */
     @Test
     public void testLoadingCommonSetting() throws Exception {
-        JsonConfigLoader sut = new JsonConfigLoader();
-        sut.setConfigPath("nablarch/etl/config/etl-error-common-setting.json");
+        new Expectations(){{
+            mockJobContext.getJobName();
+            result = "etl-error-common-setting";
+        }};
 
-        try {
-            sut.load();
-            fail();
-        } catch (IllegalStateException e) {
-            assertThat(e.getMessage(), is("failed to load etl config file. file = [nablarch/etl/config/etl-error-common-setting.json]"));
-        }
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("failed to load etl config file. file = [META-INF/batch-config/etl-error-common-setting.json]");
+
+        sut.load(mockJobContext);
     }
 }

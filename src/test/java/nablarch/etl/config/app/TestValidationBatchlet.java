@@ -1,8 +1,8 @@
 package nablarch.etl.config.app;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import nablarch.etl.config.EtlConfig;
+import nablarch.etl.config.StepConfig;
+import nablarch.etl.config.ValidationStepConfig;
 
 import javax.batch.api.AbstractBatchlet;
 import javax.batch.runtime.context.JobContext;
@@ -11,9 +11,9 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
-import nablarch.etl.config.ValidationStepConfig;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 @Named
 @Dependent
@@ -27,12 +27,11 @@ public class TestValidationBatchlet extends AbstractBatchlet {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private StepConfig stepConfig;
 
     @Override
     public String process() throws Exception {
-        ValidationStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        ValidationStepConfig config = (ValidationStepConfig) stepConfig;
 
         assertThat(config, is(notNullValue()));
         assertThat(config.getBean()

@@ -1,14 +1,5 @@
 package nablarch.etl;
 
-import java.text.MessageFormat;
-
-import javax.batch.api.AbstractBatchlet;
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import nablarch.common.dao.EntityUtil;
 import nablarch.core.db.connection.AppDbConnection;
 import nablarch.core.db.connection.DbConnectionContext;
@@ -20,8 +11,16 @@ import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.InsertMode;
 import nablarch.etl.config.DbToDbStepConfig.UpdateSize;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.StepConfig;
 import nablarch.etl.generator.InsertSqlGenerator;
+
+import javax.batch.api.AbstractBatchlet;
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.text.MessageFormat;
 
 /**
  * テーブル間のデータ転送を行う{@link javax.batch.api.Batchlet}実装クラス。
@@ -52,7 +51,7 @@ public class DeleteInsertBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private StepConfig stepConfig;
 
     /**
      * 一括登録処理を行う。
@@ -63,8 +62,7 @@ public class DeleteInsertBatchlet extends AbstractBatchlet {
     @Override
     public String process() throws Exception {
 
-        final DbToDbStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        final DbToDbStepConfig config = (DbToDbStepConfig) stepConfig;
 
         verify(config);
 

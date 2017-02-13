@@ -1,16 +1,5 @@
 package nablarch.etl;
 
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.List;
-
-import javax.batch.api.chunk.AbstractItemWriter;
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import nablarch.common.dao.EntityUtil;
 import nablarch.common.dao.UniversalDao;
 import nablarch.core.log.Logger;
@@ -18,8 +7,18 @@ import nablarch.core.log.LoggerManager;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.FileToDbStepConfig;
-import nablarch.etl.config.RootConfig;
 import nablarch.etl.config.StepConfig;
+
+import javax.batch.api.chunk.AbstractItemWriter;
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.List;
+
 
 /**
  * データベースのテーブルに対してデータを書き込む{@link javax.batch.api.chunk.ItemWriter}実装クラス。
@@ -46,16 +45,14 @@ public class DatabaseItemWriter extends AbstractItemWriter {
     /** ETLの設定 */
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private StepConfig stepConfig;
 
     @Override
     public void open(Serializable checkpoint) throws Exception {
-        final StepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
-        if ( config instanceof DbToDbStepConfig ) {
-            loggingStartChunk(EntityUtil.getTableName(((DbToDbStepConfig)config).getBean()));
-        } else if ( config instanceof FileToDbStepConfig ) {
-            loggingStartChunk(EntityUtil.getTableName(((FileToDbStepConfig)config).getBean()));
+        if (stepConfig instanceof DbToDbStepConfig) {
+            loggingStartChunk(EntityUtil.getTableName(((DbToDbStepConfig)stepConfig).getBean()));
+        } else if (stepConfig instanceof FileToDbStepConfig) {
+            loggingStartChunk(EntityUtil.getTableName(((FileToDbStepConfig)stepConfig).getBean()));
         }
     }
 

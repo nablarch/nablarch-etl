@@ -1,11 +1,10 @@
 package nablarch.etl.config.app;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.List;
+import nablarch.etl.config.ConfigIntegrationTest;
+import nablarch.etl.config.DbToDbStepConfig;
+import nablarch.etl.config.DbToDbStepConfig.InsertMode;
+import nablarch.etl.config.EtlConfig;
+import nablarch.etl.config.StepConfig;
 
 import javax.batch.api.chunk.AbstractItemWriter;
 import javax.batch.runtime.context.JobContext;
@@ -13,12 +12,12 @@ import javax.batch.runtime.context.StepContext;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Arrays;
+import java.util.List;
 
-import nablarch.etl.config.ConfigIntegrationTest;
-import nablarch.etl.config.DbToDbStepConfig;
-import nablarch.etl.config.DbToDbStepConfig.InsertMode;
-import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * {@link ConfigIntegrationTest}で使用する{@link javax.batch.api.chunk.ItemWriter}。
@@ -35,13 +34,12 @@ public class TestItemWriter extends AbstractItemWriter {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private StepConfig stepConfig;
 
     @Override
     public void writeItems(List<Object> items) throws Exception {
 
-        DbToDbStepConfig config = etlConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        DbToDbStepConfig config = (DbToDbStepConfig) stepConfig;
 
         assertThat(config, is(notNullValue()));
         assertThat(config.getBean().getName(), is(TestDto2.class.getName()));

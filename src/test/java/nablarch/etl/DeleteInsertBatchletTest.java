@@ -1,19 +1,9 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
@@ -23,12 +13,10 @@ import nablarch.core.transaction.TransactionFactory;
 import nablarch.etl.config.DbToDbStepConfig;
 import nablarch.etl.config.DbToDbStepConfig.InsertMode;
 import nablarch.etl.config.DbToDbStepConfig.UpdateSize;
-import nablarch.etl.config.RootConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,10 +24,18 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * {@link DeleteInsertBatchlet}のテストクラス。
@@ -60,9 +56,6 @@ public class DeleteInsertBatchletTest {
 
     @Mocked
     private StepContext mockStepContext;
-
-    @Mocked
-    private RootConfig mockEtlConfig;
 
     @Mocked(cascading = false)
     private DbToDbStepConfig mockDbToDbStepConfig;
@@ -93,12 +86,10 @@ public class DeleteInsertBatchletTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
-            result = mockDbToDbStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "stepConfig", mockDbToDbStepConfig);
 
         final RangeUpdateHelper rangeUpdateHelper = new RangeUpdateHelper();
         Deencapsulation.setField(rangeUpdateHelper, mockJobContext);

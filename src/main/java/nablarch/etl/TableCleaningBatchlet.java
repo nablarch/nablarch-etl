@@ -1,6 +1,12 @@
 package nablarch.etl;
 
-import java.util.List;
+import nablarch.common.dao.EntityUtil;
+import nablarch.core.db.connection.AppDbConnection;
+import nablarch.core.db.connection.DbConnectionContext;
+import nablarch.core.db.statement.SqlPStatement;
+import nablarch.etl.config.EtlConfig;
+import nablarch.etl.config.StepConfig;
+import nablarch.etl.config.TruncateStepConfig;
 
 import javax.batch.api.AbstractBatchlet;
 import javax.batch.runtime.context.JobContext;
@@ -8,14 +14,7 @@ import javax.batch.runtime.context.StepContext;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import nablarch.common.dao.EntityUtil;
-import nablarch.core.db.connection.AppDbConnection;
-import nablarch.core.db.connection.DbConnectionContext;
-import nablarch.core.db.statement.SqlPStatement;
-import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
-import nablarch.etl.config.TruncateStepConfig;
+import java.util.List;
 
 /**
  * テーブルのデータをクリーニング(truncate)する{@link javax.batch.api.Batchlet}実装クラス。
@@ -39,13 +38,13 @@ public class TableCleaningBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @Inject
     @EtlConfig
-    private RootConfig rootConfig;
+    private StepConfig stepConfig;
 
 
     @Override
     public String process() throws Exception {
 
-        final TruncateStepConfig config = rootConfig.getStepConfig(jobContext.getJobName(), stepContext.getStepName());
+        final TruncateStepConfig config = (TruncateStepConfig) stepConfig;
         final List<Class<?>> entities = config.getEntities();
 
         final AppDbConnection connection = DbConnectionContext.getConnection();

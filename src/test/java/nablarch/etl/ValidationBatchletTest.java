@@ -1,22 +1,8 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
-
-import java.util.List;
-
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.AssertTrue;
-
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 import nablarch.common.databind.csv.Csv;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
@@ -24,13 +10,11 @@ import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.core.transaction.TransactionFactory;
 import nablarch.core.validation.ee.Domain;
-import nablarch.etl.config.RootConfig;
 import nablarch.etl.config.ValidationStepConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,9 +25,21 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.AssertTrue;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 /**
  * {@link ValidationBatchlet}のテスト。
@@ -76,11 +72,8 @@ public class ValidationBatchletTest {
     /** テスト対象 */
     ValidationBatchlet sut = new ValidationBatchlet();
 
-    @Mocked()
-    RootConfig mockConfig;
-
     @Mocked
-    JobContext mockJobJobContext;
+    JobContext mockJobContext;
 
     @Mocked
     StepContext mockStepContext;
@@ -90,22 +83,20 @@ public class ValidationBatchletTest {
     @Before
     public void setUp() throws Exception {
         // set mock object
-        Deencapsulation.setField(sut, mockConfig);
-        Deencapsulation.setField(sut, mockJobJobContext);
-        Deencapsulation.setField(sut, mockStepContext);
-
         stepConfig = new ValidationStepConfig();
         stepConfig.setBean(ValidationBatchletBean.class);
         stepConfig.setErrorTableEntity(ValidationBatchletErrorBean.class);
 
+        Deencapsulation.setField(sut, "stepConfig", stepConfig);
+        Deencapsulation.setField(sut, mockJobContext);
+        Deencapsulation.setField(sut, mockStepContext);
+
         new Expectations() {{
-            mockJobJobContext.getJobName();
+            mockJobContext.getJobName();
             final String methodName = testName.getMethodName();
             result = methodName + "_job";
             mockStepContext.getStepName();
             result = methodName + "_step";
-            mockConfig.getStepConfig(methodName + "_job", methodName + "_step");
-            result = stepConfig;
         }};
 
         // set database connection

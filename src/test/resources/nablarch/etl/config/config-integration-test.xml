@@ -11,8 +11,4 @@
     <property name="extension" value="sql"/>
   </component>
 
-  <component name="etlConfigLoader" class="nablarch.etl.config.JsonConfigLoader">
-    <property name="configPath" value="nablarch/etl/config/config-integration-test.json"/>
-  </component>
-
 </component-configuration>

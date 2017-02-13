@@ -10,7 +10,6 @@
   <import file="nablarch/etl/integration/db.xml" />
   <import file="nablarch/etl/integration/batchListeners.xml" />
 
-  <import file="nablarch/etl/integration/etl.xml" />
   <import file="nablarch/etl/integration/validation.xml" />
 
   <!-- 初期化機能の設定 -->

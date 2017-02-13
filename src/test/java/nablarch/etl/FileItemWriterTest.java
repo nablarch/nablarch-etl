@@ -1,9 +1,20 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
+import nablarch.common.databind.csv.Csv;
+import nablarch.core.repository.SystemRepository;
+import nablarch.etl.config.DbToFileStepConfig;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,23 +23,9 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import nablarch.common.databind.csv.Csv;
-import nablarch.core.repository.SystemRepository;
-import nablarch.etl.config.DbToFileStepConfig;
-import nablarch.etl.config.RootConfig;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * {@link FileItemWriter}のテストクラス。
@@ -48,9 +45,6 @@ public class FileItemWriterTest {
     private StepContext mockStepContext;
 
     @Mocked
-    private RootConfig mockEtlConfig;
-
-    @Mocked
     private DbToFileStepConfig mockDbToFileStepConfig;
 
     @Before
@@ -64,12 +58,10 @@ public class FileItemWriterTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
-            result = mockDbToFileStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "stepConfig", mockDbToFileStepConfig);
     }
 
     @After

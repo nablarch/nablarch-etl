@@ -12,7 +12,7 @@ import nablarch.core.log.LoggerManager;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.core.validation.ee.ValidatorUtil;
 import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.RootConfig;
+import nablarch.etl.config.StepConfig;
 import nablarch.etl.config.ValidationStepConfig;
 import nablarch.etl.config.ValidationStepConfig.Mode;
 
@@ -64,18 +64,17 @@ public class ValidationBatchlet extends AbstractBatchlet {
     /** ETLの設定 */
     @Inject
     @EtlConfig
-    private RootConfig rootConfig;
+    private StepConfig stepConfig;
 
     @Override
     public String process() throws Exception {
 
-        final ValidationStepConfig stepConfig = rootConfig.getStepConfig(
-                jobContext.getJobName(), stepContext.getStepName());
+        final ValidationStepConfig config = (ValidationStepConfig) stepConfig;
 
-        verifyConfig(stepConfig);
+        verifyConfig(config);
 
-        final Class<?> inputTable = stepConfig.getBean();
-        final Class<?> errorTable = stepConfig.getErrorEntity();
+        final Class<?> inputTable = config.getBean();
+        final Class<?> errorTable = config.getErrorEntity();
 
         truncateErrorTable(errorTable);
 
@@ -97,7 +96,7 @@ public class ValidationBatchlet extends AbstractBatchlet {
 
             validationResult.addErrorCount(constraintViolations.size());
             onError(workItem, constraintViolations, errorTable);
-            if (isOverLimit(stepConfig, validationResult)) {
+            if (isOverLimit(config, validationResult)) {
                 throw new EtlJobAbortedException("number of validation errors has exceeded the maximum number of errors."
                         + " bean class=[" + inputTable.getName() + ']');
             }
@@ -115,7 +114,7 @@ public class ValidationBatchlet extends AbstractBatchlet {
         // エラーテーブルに格納した情報などが破棄されてしまう。
         commit();
 
-        return buildResult(stepConfig.getMode(), inputTable, validationResult);
+        return buildResult(config.getMode(), inputTable, validationResult);
     }
 
     /**

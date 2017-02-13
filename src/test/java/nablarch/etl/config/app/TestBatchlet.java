@@ -1,11 +1,11 @@
 package nablarch.etl.config.app;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.io.File;
+import nablarch.etl.BasePath;
+import nablarch.etl.config.DbToFileStepConfig;
+import nablarch.etl.config.EtlConfig;
+import nablarch.etl.config.FileToDbStepConfig;
+import nablarch.etl.config.PathConfig;
+import nablarch.etl.config.StepConfig;
 
 import javax.batch.api.AbstractBatchlet;
 import javax.batch.runtime.context.JobContext;
@@ -13,17 +13,16 @@ import javax.batch.runtime.context.StepContext;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.File;
 
-import nablarch.etl.BasePath;
-import nablarch.etl.config.ConfigIntegrationTest;
-import nablarch.etl.config.DbToFileStepConfig;
-import nablarch.etl.config.EtlConfig;
-import nablarch.etl.config.FileToDbStepConfig;
-import nablarch.etl.config.PathConfig;
-import nablarch.etl.config.RootConfig;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 
 /**
- * {@link ConfigIntegrationTest}で使用する{@link javax.batch.api.Batchlet}。
+ * {@link nablarch.etl.config.ConfigIntegrationTest}で使用する{@link javax.batch.api.Batchlet}。
  */
 @Named
 @Dependent
@@ -37,7 +36,7 @@ public class TestBatchlet extends AbstractBatchlet {
 
     @EtlConfig
     @Inject
-    private RootConfig etlConfig;
+    private StepConfig stepConfig;
 
     @PathConfig(BasePath.INPUT)
     @Inject
@@ -63,7 +62,7 @@ public class TestBatchlet extends AbstractBatchlet {
 
         if ("step1".equals(stepId)) {
 
-            FileToDbStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+            FileToDbStepConfig config = (FileToDbStepConfig) stepConfig;
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto.class.getName()));
             assertThat(inputFileBasePath, is(new File("base/input")));
@@ -73,7 +72,7 @@ public class TestBatchlet extends AbstractBatchlet {
 
         } else if ("step3".equals(stepId)) {
 
-            DbToFileStepConfig config = etlConfig.getStepConfig(jobId, stepId);
+            DbToFileStepConfig config = (DbToFileStepConfig) stepConfig;
             assertThat(config, is(notNullValue()));
             assertThat(config.getBean().getName(), is(TestDto3.class.getName()));
             assertThat(config.getSqlId(), is("SELECT_TEST3"));

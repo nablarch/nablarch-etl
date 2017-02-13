@@ -1,0 +1,38 @@
+{
+  "steps": {
+    "truncate": {
+      "type": "truncate",
+      "entities": [
+        "nablarch.etl.integration.app.InputFile1Dto",
+        "nablarch.etl.integration.app.InputFile2Dto"
+      ]
+    },
+    "extract-file1": {
+      "type": "file2db",
+      "bean": "nablarch.etl.integration.app.InputFile1Dto",
+      "fileName": "inputfile1.csv"
+    },
+    "extract-file2": {
+      "type": "file2db",
+      "bean": "nablarch.etl.integration.app.InputFile2Dto",
+      "fileName": "inputfile2.csv"
+    },
+    "validation-file1": {
+      "type": "validation",
+      "bean": "nablarch.etl.integration.app.InputFile1Dto",
+      "errorEntity": "nablarch.etl.integration.app.InputFile1ErrorEntity",
+      "mode": "CONTINUE"
+    },
+    "validation-file2": {
+      "type": "validation",
+      "bean": "nablarch.etl.integration.app.InputFile2Dto",
+      "errorEntity": "nablarch.etl.integration.app.InputFile2ErrorEntity",
+      "mode": "CONTINUE"
+    },
+    "load": {
+      "type": "db2db",
+      "bean": "nablarch.etl.integration.app.OutputTable3Entity",
+      "sqlId": "SELECT_INPUT_FILE1_AND_INPUT_FILE2"
+    }
+  }
+}

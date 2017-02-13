@@ -1,18 +1,5 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -22,17 +9,28 @@ import nablarch.core.db.connection.TransactionManagerConnection;
 import nablarch.core.db.statement.exception.SqlStatementException;
 import nablarch.core.transaction.TransactionContext;
 import nablarch.etl.config.DbInputStepConfig;
-import nablarch.etl.config.RootConfig;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.batch.runtime.context.JobContext;
+import javax.batch.runtime.context.StepContext;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * {@link nablarch.etl.DatabaseItemReader}のテストクラス。
@@ -51,9 +49,6 @@ public class DatabaseItemReaderTest {
 
     @Mocked
     private StepContext mockStepContext;
-
-    @Mocked
-    private RootConfig mockEtlConfig;
 
     @Mocked
     private DbInputStepConfig mockDbInputStepConfig;
@@ -80,12 +75,10 @@ public class DatabaseItemReaderTest {
             result = "test-step";
             mockJobContext.getJobName();
             result = "test-job";
-            mockEtlConfig.getStepConfig("test-job", "test-step");
-            result = mockDbInputStepConfig;
         }};
         Deencapsulation.setField(sut, "jobContext", mockJobContext);
         Deencapsulation.setField(sut, "stepContext", mockStepContext);
-        Deencapsulation.setField(sut, "etlConfig", mockEtlConfig);
+        Deencapsulation.setField(sut, "stepConfig", mockDbInputStepConfig);
     }
 
     @After
