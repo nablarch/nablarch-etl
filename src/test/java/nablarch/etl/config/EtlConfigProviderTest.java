@@ -43,7 +43,7 @@ public class EtlConfigProviderTest {
      */
     @Before
     public void setUp() throws Exception {
-        Deencapsulation.setField(sut, "alreadyReadJobConfig", new ConcurrentHashMap<String, JobConfig>());
+        Deencapsulation.setField(sut, "LOADED_ETL_CONFIG", new ConcurrentHashMap<String, JobConfig>());
     }
 
     /**
