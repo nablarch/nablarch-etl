@@ -11,7 +11,7 @@ import javax.batch.runtime.context.JobContext;
 /**
  * JSON形式のファイルに定義されたETLの設定をロードするクラス。
  * <p/>
- * "META-INF/batch-config/" 配下に置かれた "ジョブID.json" をロードする。
+ * "META-INF/etl-config/" 配下に置かれた "ジョブID.json" をロードする。
  * 
  * @author Kiyohito Itoh
  */
@@ -24,7 +24,7 @@ public class JsonConfigLoader implements EtlConfigLoader {
     public JobConfig load(JobContext jobContext) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.addMixIn(StepConfig.class, PolymorphicStepConfigMixIn.class);
-        String configPath = "META-INF/batch-config/" + jobContext.getJobName() + ".json";
+        String configPath = "META-INF/etl-config/" + jobContext.getJobName() + ".json";
 
         try {
             return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), JobConfig.class);

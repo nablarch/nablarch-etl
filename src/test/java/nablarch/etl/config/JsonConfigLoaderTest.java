@@ -26,7 +26,7 @@ public class JsonConfigLoaderTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     /**
-     * META-INF/batch-config/(JOB_ID).jsonの設定ファイルが読み込まれること。
+     * META-INF/etl-config/(JOB_ID).jsonの設定ファイルが読み込まれること。
      */
     @Test
     public void testDefaultPath() throws Exception {
@@ -53,7 +53,7 @@ public class JsonConfigLoaderTest {
         }};
 
         expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("failed to load etl config file. file = [META-INF/batch-config/etl-error.json]");
+        expectedException.expectMessage("failed to load etl config file. file = [META-INF/etl-config/etl-error.json]");
 
         sut.load(mockJobContext);
     }
@@ -69,7 +69,7 @@ public class JsonConfigLoaderTest {
         }};
 
         expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("failed to load etl config file. file = [META-INF/batch-config/unknown.json]");
+        expectedException.expectMessage("failed to load etl config file. file = [META-INF/etl-config/unknown.json]");
 
         sut.load(mockJobContext);
     }
@@ -85,7 +85,7 @@ public class JsonConfigLoaderTest {
         }};
 
         expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("failed to load etl config file. file = [META-INF/batch-config/etl-error-common-setting.json]");
+        expectedException.expectMessage("failed to load etl config file. file = [META-INF/etl-config/etl-error-common-setting.json]");
 
         sut.load(mockJobContext);
     }
