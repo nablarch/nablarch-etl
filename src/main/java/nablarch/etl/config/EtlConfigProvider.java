@@ -24,7 +24,7 @@ public final class EtlConfigProvider {
     private static final EtlConfigLoader DEFAULT_LOADER = new JsonConfigLoader();
 
     /** ロード済みのETLの設定 */
-    private static final Map<String, JobConfig> ALREADY_READ_ETL_CONFIG = new ConcurrentHashMap<String, JobConfig>();
+    private static final Map<String, JobConfig> LOADED_ETL_CONFIG = new ConcurrentHashMap<String, JobConfig>();
 
     /**
      * ETLの設定をロードし、初期化とキャッシュを行う。
@@ -33,11 +33,11 @@ public final class EtlConfigProvider {
      * @return ETLの設定
      */
     private synchronized JobConfig initialize(JobContext jobContext) {
-        JobConfig jobConfig = ALREADY_READ_ETL_CONFIG.get(jobContext.getJobName());
+        JobConfig jobConfig = LOADED_ETL_CONFIG.get(jobContext.getJobName());
         if (jobConfig == null) {
             jobConfig = getLoader().load(jobContext);
             jobConfig.initialize();
-            ALREADY_READ_ETL_CONFIG.put(jobContext.getJobName(), jobConfig);
+            LOADED_ETL_CONFIG.put(jobContext.getJobName(), jobConfig);
         }
         return jobConfig;
     }
@@ -66,7 +66,7 @@ public final class EtlConfigProvider {
     @EtlConfig
     @Produces
     public StepConfig getConfig(JobContext jobContext, StepContext stepContext) {
-        JobConfig jobConfig = ALREADY_READ_ETL_CONFIG.get(jobContext.getJobName());
+        JobConfig jobConfig = LOADED_ETL_CONFIG.get(jobContext.getJobName());
         if (jobConfig == null) {
             jobConfig = initialize(jobContext);
         }
