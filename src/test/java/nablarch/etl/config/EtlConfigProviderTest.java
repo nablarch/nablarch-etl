@@ -26,8 +26,6 @@ import static org.junit.Assert.assertThat;
  */
 public class EtlConfigProviderTest {
 
-    EtlConfigProvider sut = new EtlConfigProvider();
-
     @Mocked
     JobContext mockJobContext;
 
@@ -43,7 +41,7 @@ public class EtlConfigProviderTest {
      */
     @Before
     public void setUp() throws Exception {
-        Deencapsulation.setField(sut, "LOADED_ETL_CONFIG", new ConcurrentHashMap<String, JobConfig>());
+        Deencapsulation.setField(EtlConfigProvider.class, "LOADED_ETL_CONFIG", new ConcurrentHashMap<String, JobConfig>());
     }
 
     /**
@@ -64,14 +62,14 @@ public class EtlConfigProviderTest {
 
         // ジョブ設定１
 
-        FileToDbStepConfig job1Step1 = (FileToDbStepConfig) sut.getConfig(mockJobContext, mockStepContext);
+        FileToDbStepConfig job1Step1 = (FileToDbStepConfig) EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
 
         assertThat(job1Step1, is(notNullValue()));
         assertThat(job1Step1.getStepId(), is("step1"));
         assertThat(job1Step1.getBean().getName(), is(TestDto.class.getName()));
         assertThat(job1Step1.getFileName(), is("test-input.csv"));
 
-        DbToDbStepConfig job1Step2 = (DbToDbStepConfig) sut.getConfig(mockJobContext, mockStepContext);
+        DbToDbStepConfig job1Step2 = (DbToDbStepConfig) EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
 
         assertThat(job1Step2, is(notNullValue()));
         assertThat(job1Step2.getStepId(), is("step2"));
@@ -83,7 +81,7 @@ public class EtlConfigProviderTest {
         assertThat(job1Step2.getMergeOnColumns().get(1), is("test22"));
         assertThat(job1Step2.getMergeOnColumns().get(2), is("test23"));
 
-        DbToFileStepConfig job1Step3 = (DbToFileStepConfig) sut.getConfig(mockJobContext, mockStepContext);
+        DbToFileStepConfig job1Step3 = (DbToFileStepConfig) EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
         ;
 
         assertThat(job1Step3, is(notNullValue()));
@@ -111,7 +109,7 @@ public class EtlConfigProviderTest {
             result = "step";
         }};
 
-        StepConfig actual = sut.getConfig(mockJobContext, mockStepContext);
+        StepConfig actual = EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
 
         assertThat(loader.count, is(1));
     }
@@ -153,8 +151,8 @@ public class EtlConfigProviderTest {
             result = "step";
         }};
 
-        sut.getConfig(mockJobContext, mockStepContext);
-        sut.getConfig(mockJobContext, mockStepContext);
+        EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
+        EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
 
         assertThat(loader.count, is(1));
     }
@@ -177,10 +175,10 @@ public class EtlConfigProviderTest {
             result = "step";
         }};
 
-        sut.getConfig(mockJobContext, mockStepContext);
-        sut.getConfig(mockJobContext, mockStepContext);
-        sut.getConfig(mockJobContext, mockStepContext);
-        sut.getConfig(mockJobContext, mockStepContext);
+        EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
+        EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
+        EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
+        EtlConfigProvider.getConfig(mockJobContext, mockStepContext);
 
         assertThat(loader.count, is(2));
     }
@@ -200,8 +198,8 @@ public class EtlConfigProviderTest {
             result = "jobName";
         }};
 
-        Deencapsulation.invoke(sut, "initialize", mockJobContext);
-        Deencapsulation.invoke(sut, "initialize", mockJobContext);
+        Deencapsulation.invoke(EtlConfigProvider.class, "initialize", mockJobContext);
+        Deencapsulation.invoke(EtlConfigProvider.class, "initialize", mockJobContext);
 
         assertThat(loader.count, is(1));
     }
