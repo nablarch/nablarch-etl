@@ -10,13 +10,13 @@ import nablarch.core.util.annotation.Published;
 @Published(tag = "architect")
 public enum BasePath {
     /** 入力ファイルのベースパス */
-    INPUT("inputFileBasePath"),
+    INPUT("nablarch.etl.inputFileBasePath"),
     /** 出力ファイルのベースパス */
-    OUTPUT("outputFileBasePath"),
+    OUTPUT("nablarch.etl.outputFileBasePath"),
     /** SQLLoaderに使用するコントロールファイルのベースパス */
-    SQLLOADER_CONTROL("sqlLoaderControlFileBasePath"),
+    SQLLOADER_CONTROL("nablarch.etl.sqlLoaderControlFileBasePath"),
     /** SQLLoaderが出力するファイルのベースパス */
-    SQLLOADER_OUTPUT("sqlLoaderOutputFileBasePath");
+    SQLLOADER_OUTPUT("nablarch.etl.sqlLoaderOutputFileBasePath");
 
     /** ベースパスのキー */
     private final String key;

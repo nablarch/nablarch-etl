@@ -74,7 +74,7 @@ public class BasePathProducerTest {
         try {
             sut.getPathConfig(injectionPoint);
         } finally {
-            Deencapsulation.setField(BasePath.INPUT, "inputFileBasePath");
+            Deencapsulation.setField(BasePath.INPUT, "nablarch.etl.inputFileBasePath");
         }
     }
 

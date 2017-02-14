@@ -11,11 +11,14 @@ import javax.batch.runtime.context.JobContext;
 /**
  * JSON形式のファイルに定義されたETLの設定をロードするクラス。
  * <p/>
- * "META-INF/etl-config/" 配下に置かれた "ジョブID.json" をロードする。
+ * "classpath:META-INF/etl-config/" 配下に置かれた "ジョブID.json" をロードする。
  * 
  * @author Kiyohito Itoh
  */
 public class JsonConfigLoader implements EtlConfigLoader {
+
+    /** 設定ファイルを配置するディレクトリのベースパス */
+    private String configBasePath = "classpath:META-INF/etl-config/";
 
     /**
      * 設定ファイルから設定をロードする。
@@ -24,14 +27,22 @@ public class JsonConfigLoader implements EtlConfigLoader {
     public JobConfig load(JobContext jobContext) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.addMixIn(StepConfig.class, PolymorphicStepConfigMixIn.class);
-        String configPath = "META-INF/etl-config/" + jobContext.getJobName() + ".json";
 
+        final String configFilePath = configBasePath + jobContext.getJobName() + ".json";
         try {
-            return mapper.readValue(FileUtil.getClasspathResourceURL(configPath), JobConfig.class);
+            return mapper.readValue(FileUtil.getResourceURL(configFilePath), JobConfig.class);
         } catch (Exception e) {
             throw new IllegalStateException(
-                String.format("failed to load etl config file. file = [%s]", configPath), e);
+                String.format("failed to load etl config file. file = [%s]", configFilePath), e);
         }
+    }
+
+    /**
+     * 設定ファイルを配置するディレクトリのベースパスを設定する。
+     * @param configBasePath ディレクトリのベースパス
+     */
+    public void setConfigBasePath(String configBasePath) {
+        this.configBasePath = configBasePath;
     }
 
     /**
