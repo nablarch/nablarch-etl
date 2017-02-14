@@ -24,7 +24,7 @@ public class JsonConfigLoader implements EtlConfigLoader {
     private String configBasePath = "classpath:META-INF/etl-config/";
 
     /** {@link ObjectMapper}でjsonからMapオブジェクトを生成する際に使用する型情報 */
-    private static final TypeReference<LinkedHashMap<String, StepConfig>> TYPE_REFERENCE = new TypeReference<LinkedHashMap<String, StepConfig>>(){};
+    private static final TypeReference<Map<String, StepConfig>> TYPE_REFERENCE = new TypeReference<Map<String, StepConfig>>(){};
 
     /**
      * 設定ファイルから設定をロードする。
@@ -37,7 +37,8 @@ public class JsonConfigLoader implements EtlConfigLoader {
         final String configFilePath = configBasePath + jobContext.getJobName() + ".json";
         try {
             JobConfig jobConfig = new JobConfig();
-            jobConfig.setSteps((Map<String, StepConfig>) mapper.readValue(FileUtil.getResourceURL(configFilePath), TYPE_REFERENCE));
+            Map<String, StepConfig> steps = mapper.readValue(FileUtil.getResourceURL(configFilePath), TYPE_REFERENCE);
+            jobConfig.setSteps(steps);
             return jobConfig;
         } catch (Exception e) {
             throw new IllegalStateException(
@@ -48,12 +49,7 @@ public class JsonConfigLoader implements EtlConfigLoader {
     /**
      * 設定ファイルを配置するディレクトリのベースパスを設定する。
      * <p/>
-     * ベースパスには、以下のスキーム名を指定することができる。
-     * <pre>
-     *     classpath
-     *     file
-     * </pre>
-     * 詳細は{@link FileUtil#getResourceURL(String)}を参照。
+     * パスの指定方法は{@link FileUtil#getResourceURL(String)}を参照。
      *
      * @param configBasePath ディレクトリのベースパス
      */
