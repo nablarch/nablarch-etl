@@ -3,10 +3,13 @@ package nablarch.etl.config;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nablarch.core.util.FileUtil;
 
 import javax.batch.runtime.context.JobContext;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * JSON形式のファイルに定義されたETLの設定をロードするクラス。
@@ -20,6 +23,9 @@ public class JsonConfigLoader implements EtlConfigLoader {
     /** 設定ファイルを配置するディレクトリのベースパス */
     private String configBasePath = "classpath:META-INF/etl-config/";
 
+    /** {@link ObjectMapper}でjsonからMapオブジェクトを生成する際に使用する型情報 */
+    private static final TypeReference<LinkedHashMap<String, StepConfig>> TYPE_REFERENCE = new TypeReference<LinkedHashMap<String, StepConfig>>(){};
+
     /**
      * 設定ファイルから設定をロードする。
      */
@@ -30,7 +36,9 @@ public class JsonConfigLoader implements EtlConfigLoader {
 
         final String configFilePath = configBasePath + jobContext.getJobName() + ".json";
         try {
-            return mapper.readValue(FileUtil.getResourceURL(configFilePath), JobConfig.class);
+            JobConfig jobConfig = new JobConfig();
+            jobConfig.setSteps((Map<String, StepConfig>) mapper.readValue(FileUtil.getResourceURL(configFilePath), TYPE_REFERENCE));
+            return jobConfig;
         } catch (Exception e) {
             throw new IllegalStateException(
                 String.format("failed to load etl config file. file = [%s]", configFilePath), e);
@@ -39,6 +47,14 @@ public class JsonConfigLoader implements EtlConfigLoader {
 
     /**
      * 設定ファイルを配置するディレクトリのベースパスを設定する。
+     * <p/>
+     * ベースパスには、以下のスキーム名を指定することができる。
+     * <pre>
+     *     classpath
+     *     file
+     * </pre>
+     * 詳細は{@link FileUtil#getResourceURL(String)}を参照。
+     *
      * @param configBasePath ディレクトリのベースパス
      */
     public void setConfigBasePath(String configBasePath) {

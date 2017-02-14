@@ -1,7 +1,6 @@
 {
   "jobs": {
     "test" {
-      "steps": {
         "step1": {
           "type": "file2db",
           "bean": "nablarch.etl.config.app.TestDto",
