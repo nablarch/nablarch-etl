@@ -42,7 +42,7 @@ public class JsonConfigLoader implements EtlConfigLoader {
             return jobConfig;
         } catch (Exception e) {
             throw new IllegalStateException(
-                String.format("failed to load etl config file. file = [%s]", configFilePath), e);
+                String.format("failed to load etl config file. file = [%s], message = [%s]", configFilePath, e.getMessage()));
         }
     }
 

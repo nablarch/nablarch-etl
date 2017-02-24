@@ -41,6 +41,20 @@ public class MaxLineNumberSqlGeneratorTest {
         DbConnectionContext.removeConnection();
     }
 
+    @Rule
+    public SystemRepositoryResource systemRepositoryResource = new SystemRepositoryResource("db-default.xml");
+
+    @Before
+    public void setUp() throws Exception {
+        final ConnectionFactory connectionFactory = systemRepositoryResource.getComponentByType(ConnectionFactory.class);
+        DbConnectionContext.setConnection(connectionFactory.getConnection(TransactionContext.DEFAULT_TRANSACTION_CONTEXT_KEY));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        DbConnectionContext.removeConnection();
+    }
+
     /**
      * 設定で指定されたEntityのテーブル名が入ったSQL文が生成されること。
      */
