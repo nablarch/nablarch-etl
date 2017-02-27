@@ -3,14 +3,12 @@ package nablarch.etl.config;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nablarch.core.util.FileUtil;
 
 import javax.batch.runtime.context.JobContext;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -42,10 +40,10 @@ public class JsonConfigLoader implements EtlConfigLoader {
             Map<String, StepConfig> steps = mapper.readValue(FileUtil.getResourceURL(configFilePath), TYPE_REFERENCE);
             jobConfig.setSteps(steps);
             return jobConfig;
-        } catch (JsonParseException | JsonMappingException e) {
+        } catch (JsonProcessingException e) {
             throw new IllegalStateException(
                     String.format("failed to load etl config file. file = [%s], message = [%s]", configFilePath, e.getMessage()));
-        } catch (IOException | NullPointerException e) {
+        } catch (Exception e) {
             throw new IllegalStateException(
                     String.format("failed to load etl config file. file = [%s]", configFilePath), e);
         }
