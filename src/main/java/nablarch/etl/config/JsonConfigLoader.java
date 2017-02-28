@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nablarch.core.util.FileUtil;
+import nablarch.etl.InvalidEtlConfigException;
 
 import javax.batch.runtime.context.JobContext;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class JsonConfigLoader implements EtlConfigLoader {
             jobConfig.setSteps(steps);
             return jobConfig;
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException(
+            throw new InvalidEtlConfigException(
                     String.format("failed to load etl config file. file = [%s], message = [%s]", configFilePath, e.getMessage()));
         } catch (Exception e) {
             throw new IllegalStateException(
