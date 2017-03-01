@@ -7,6 +7,7 @@ import nablarch.core.repository.SystemRepository;
 import nablarch.core.repository.di.DiContainer;
 import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
 import nablarch.etl.InvalidEtlConfigException;
+import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -145,7 +146,7 @@ public class JsonConfigLoaderTest {
 
         expectedException.expect(InvalidEtlConfigException.class);
         expectedException.expectMessage("failed to load etl config file. file = [classpath:META-INF/etl-config/json-fail-job.json], message = [Can not construct instance of java.lang.Class, problem: notFound");
-        expectedException.expectCause(is(not(instanceOf(JsonMappingException.class))));
+        expectedException.expectCause(is(not(CoreMatchers.<Throwable> instanceOf(JsonMappingException.class))));
 
         sut.load(mockJobContext);
     }
