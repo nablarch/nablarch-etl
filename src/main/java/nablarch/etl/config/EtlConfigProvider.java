@@ -26,6 +26,10 @@ public final class EtlConfigProvider {
     /** ロード済みのETLの設定 */
     private static final Map<String, JobConfig> LOADED_ETL_CONFIG = new ConcurrentHashMap<String, JobConfig>();
 
+    /** 隠蔽コンストラクタ */
+    private EtlConfigProvider() {
+    }
+
     /**
      * ETLの設定をロードし、初期化とキャッシュを行う。
      *
