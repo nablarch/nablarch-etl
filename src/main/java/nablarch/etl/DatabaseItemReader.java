@@ -4,6 +4,7 @@ import nablarch.common.dao.UniversalDao;
 import nablarch.etl.config.DbInputStepConfig;
 import nablarch.etl.config.EtlConfig;
 import nablarch.etl.config.StepConfig;
+import nablarch.fw.batch.ee.chunk.BaseDatabaseItemReader;
 import nablarch.fw.batch.ee.progress.ProgressManager;
 
 import javax.batch.api.chunk.AbstractItemReader;
@@ -23,7 +24,7 @@ import java.util.Iterator;
  */
 @Named
 @Dependent
-public class DatabaseItemReader extends AbstractItemReader {
+public class DatabaseItemReader extends BaseDatabaseItemReader {
 
     /** {@link JobContext} */
     private final JobContext jobContext;
@@ -64,7 +65,7 @@ public class DatabaseItemReader extends AbstractItemReader {
      * テーブルにアクセスして指定されたSELECT文を使ってレコードを取得する。
      */
     @Override
-    public void open(final Serializable checkpoint) throws SQLException {
+    public void doOpen(final Serializable checkpoint) throws SQLException {
 
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
