@@ -73,10 +73,10 @@ public class DatabaseItemReader extends BaseDatabaseItemReader {
         EtlUtil.verifyRequired(jobId, stepId, "bean", stepConfig.getBean());
         EtlUtil.verifyRequired(jobId, stepId, "sqlId", stepConfig.getSqlId());
 
-        progressManager.setInputCount(UniversalDao.countBySqlFile(stepConfig.getBean(), stepConfig.getSqlId()));
-
         reader = UniversalDao.defer().findAllBySqlFile(
                         stepConfig.getBean(), stepConfig.getSqlId()).iterator();
+
+        progressManager.setInputCount(UniversalDao.countBySqlFile(stepConfig.getBean(), stepConfig.getSqlId()));
     }
 
     @Override

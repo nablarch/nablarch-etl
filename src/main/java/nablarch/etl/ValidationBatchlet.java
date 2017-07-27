@@ -116,8 +116,8 @@ public class ValidationBatchlet extends AbstractBatchlet {
         final long logInterval = getLogInterval();
 
         // 一時テーブルのデータを全て取得しValidationを行う。
-        progressManager.setInputCount(getRecordCountInInputTable());
         final DeferredEntityList<?> workItems = (DeferredEntityList<?>) UniversalDao.defer().findAll(inputTable);
+        progressManager.setInputCount(getRecordCountInInputTable());
 
         for (Object item : workItems) {
             validationResult.incrementCount();

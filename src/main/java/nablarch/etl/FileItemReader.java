@@ -3,6 +3,7 @@ package nablarch.etl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Serializable;
 
 import javax.batch.api.chunk.AbstractItemReader;
@@ -89,19 +90,20 @@ public class FileItemReader extends AbstractItemReader {
 
         final File inputFilePath = new File(inputFileBasePath, stepConfig.getFileName());
 
-        progressManager.setInputCount(getNumberOfRecordInInputFile(inputFilePath));
-
         reader = ObjectMapperFactory.create(
-                stepConfig.getBean(), new FileInputStream(inputFilePath));
+                stepConfig.getBean(), createFileInputStream(inputFilePath));
+        progressManager.setInputCount(getNumberOfRecordInInputFile(createFileInputStream(inputFilePath)));
+
     }
 
     /**
      * 入力ファイルのレコード数を返す。
-     * @param inputFilePath 入力ファイルパス
+     * @param inputStream 入力ストリーム
      * @return レコード数
      */
-    private long getNumberOfRecordInInputFile(final File inputFilePath) {
-        final ObjectMapper<?> inputCountReader = createReader(inputFilePath);
+    private long getNumberOfRecordInInputFile(final InputStream inputStream) {
+        final ObjectMapper<?> inputCountReader =
+                ObjectMapperFactory.create(stepConfig.getBean(), inputStream);
         try {
             long inputCount = 0;
             while (true) {
@@ -117,19 +119,17 @@ public class FileItemReader extends AbstractItemReader {
     }
 
     /**
-     * 入力ファイルを読み込むためのリーダを生成する。
-     *
+     * 入力ファイルのストリームを生成する。
      * @param inputFilePath 入力ファイルパス
-     * @return リーダ
+     * @return 入力ストリーム
      */
-    private ObjectMapper<?> createReader(final File inputFilePath) {
+    private InputStream createFileInputStream(final File inputFilePath) {
         try {
-            return ObjectMapperFactory.create(
-                    stepConfig.getBean(), new FileInputStream(inputFilePath));
+            return new FileInputStream(inputFilePath);
         } catch (FileNotFoundException e) {
             final String message = MessageUtil.createMessage(MessageLevel.ERROR, "nablarch.etl.input-file-not-found",
                     inputFilePath.getAbsolutePath())
-                                              .formatMessage();
+                    .formatMessage();
             OperationLogger.write(LogLevel.ERROR, message, e);
             throw new BatchRuntimeException(message, e);
         }
