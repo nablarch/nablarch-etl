@@ -84,7 +84,6 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
     @Override
     public String process() throws Exception {
 
-        final SqlLoaderConfig sqlLoaderConfig = getConfig();
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
@@ -103,7 +102,7 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
             return "FAILED";
         }
 
-        final SqlLoaderRunner runner = new SqlLoaderRunner(sqlLoaderConfig, ctlFile, dataFile.getPath(), badFile, logFile);
+        final SqlLoaderRunner runner = new SqlLoaderRunner(ctlFile, dataFile.getPath(), badFile, logFile);
         runner.execute();
 
         if (!runner.isSuccess()) {
@@ -113,33 +112,12 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
         return "SUCCESS";
     }
 
-
-    /**
-     * SQL*Loaderの実行時に必要な設定情報を{@link SystemRepository}から取得すし返却する。
-     *
-     * {@code SystemRepository}には、コンポーネント名を{@code sqlLoaderConfig}として{@link SqlLoaderConfig}を設定する必要がある。
-     *
-     * @return データベース名
-     */
-    protected SqlLoaderConfig getConfig() {
-        return SystemRepository.get("sqlLoaderConfig");
-    }
-
     /**
      * SQL*Loaderを実行するクラス。
      *
      * @author Naoki Yamamoto
      */
-    public static class SqlLoaderRunner {
-
-        /** DB接続ユーザ名 */
-        private final String userName;
-
-        /** DB接続パスワード */
-        private final String password;
-
-        /** データベース名 */
-        private final String databaseName;
+    private static class SqlLoaderRunner {
 
         /** コントロールファイル */
         private final String ctrlFile;
@@ -159,17 +137,12 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
         /**
          * コンストラクタ。
          *
-         * @param sqlLoaderConfig SQL*Loaderユーティリティに関する設定
          * @param ctrlFile コントロールファイル
          * @param dataFile データファイル
          * @param badFile BADファイル
          * @param logFile ログファイル
          */
-        public SqlLoaderRunner(final SqlLoaderConfig sqlLoaderConfig, String ctrlFile,
-                String dataFile, String badFile, String logFile) {
-            userName = sqlLoaderConfig.getUserName();
-            password = sqlLoaderConfig.getPassword();
-            databaseName = sqlLoaderConfig.getDatabaseName();
+        private SqlLoaderRunner(String ctrlFile, String dataFile, String badFile, String logFile) {
             this.ctrlFile = ctrlFile;
             this.dataFile = dataFile;
             this.badFile = badFile;
@@ -183,9 +156,11 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
          * @throws InterruptedException SQL*Loaderの終了待ちをしているスレッドが、他のスレッドによって割り込まれた場合
          */
         public void execute() throws IOException, InterruptedException {
+
+            final SqlLoaderConfig config = getConfig();
             ProcessBuilder pb = new ProcessBuilder(
                     "sqlldr",
-                    "USERID=" + userName + "/" + password + "@" + databaseName,
+                    "USERID=" + config.getUserName() + '/' + config.getPassword() + '@' + config.getDatabaseName(),
                     "CONTROL=" + ctrlFile,
                     "DATA=" + dataFile,
                     "BAD=" + badFile,
@@ -215,6 +190,21 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
          */
         public boolean isSuccess() {
             return process.exitValue() == 0;
+        }
+        
+        /**
+         * SQL*Loaderの実行時に必要な設定情報を{@link SystemRepository}から取得する。
+         *
+         * {@code SystemRepository}には、コンポーネント名を{@code sqlLoaderConfig}として{@link SqlLoaderConfig}を設定する必要がある。
+         *
+         * @return SqlLoaderを実行するための設定情報
+         */
+        private static SqlLoaderConfig getConfig() {
+            final SqlLoaderConfig config = SystemRepository.get("sqlLoaderConfig");
+            if (config == null) {
+                throw new IllegalStateException("SqlLoaderConfig must be registered in SystemRepository. key=[sqlLoaderConfig]");
+            }
+            return config;
         }
     }
 }

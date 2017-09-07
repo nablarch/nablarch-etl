@@ -205,7 +205,6 @@ public class SqlLoaderBatchletTest {
             sut.process();
             fail("プロセスが異常終了したため、例外が発生");
         } catch (Exception e) {
-            e.printStackTrace();
             assertThat(e, instanceOf(SqlLoaderFailedException.class));
             assertThat(e.getMessage(), is("failed to execute SQL*Loader. controlFile = [" + new File("src/test/resources/nablarch/etl/ctl/Person.ctl").getPath() + ']'));
         }
@@ -269,6 +268,33 @@ public class SqlLoaderBatchletTest {
                 containsString("-ERROR- 入力ファイルが存在しません。外部からファイルを受信できているか、"
                         + "ディレクトリやファイルの権限は正しいかを確認してください。入力ファイル=["
                         + new File(inputFilePath, "data").getAbsolutePath() + ']'));
+    }
+
+    /**
+     * {@link SqlLoaderConfig}が存在しない場合、例外が送出されること。
+     */
+    @Test
+    public void sqlLoaderConfigNotFound_shouldThrowException() throws Exception {
+        repositoryResource.addComponent("sqlLoaderConfig", null);
+
+        // -------------------------------------------------- setup objects that is injected
+        final FileToDbStepConfig stepConfig = new FileToDbStepConfig();
+        stepConfig.setBean(Person.class);
+        stepConfig.setFileName("Person.csv");
+
+        final File sqlLoaderOutputFileBasePath = temporaryFolder.newFolder();
+        final SqlLoaderBatchlet sut = new SqlLoaderBatchlet(
+                mockJobContext,
+                mockStepContext,
+                stepConfig,
+                new File("src/test/resources/nablarch/etl/data"),
+                new File("src/test/resources/nablarch/etl/ctl"),
+                sqlLoaderOutputFileBasePath);
+
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("SqlLoaderConfig must be registered in SystemRepository. key=[sqlLoaderConfig]");
+
+        sut.process();
     }
 
     @Entity
