@@ -1,8 +1,6 @@
 package nablarch.etl;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -43,7 +41,8 @@ import mockit.NonStrictExpectations;
 public class SqlLoaderBatchletTest {
 
     @Rule
-    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("db-default.xml");
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource(
+            "nablarch/etl/SqlLoaderBatchletTest.xml");
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -60,10 +59,6 @@ public class SqlLoaderBatchletTest {
     @Before
     public void setUp() throws Exception {
         OnMemoryLogWriter.clear();
-
-        repositoryResource.addComponent("db.user", "ssd");
-        repositoryResource.addComponent("db.password", "ssd");
-        repositoryResource.addComponent("db.databaseName", "xe");
 
         // -------------------------------------------------- setup objects that is injected
         new Expectations() {{
@@ -132,7 +127,7 @@ public class SqlLoaderBatchletTest {
              public void $init(String... command) {
                 // 指定した引数でコンストラクタが実行されていること
                 assertThat(command[0], is("sqlldr"));
-                assertThat(command[1], is("USERID=ssd/ssd@xe"));
+                assertThat(command[1], is("USERID=user/pass@db_name"));
                 assertThat(command[2], is("CONTROL=" + new File("src/test/resources/nablarch/etl/ctl/Person.ctl").getPath()));
                 assertThat(command[3], is("DATA=" + new File("src/test/resources/nablarch/etl/data/Person.csv").getPath()));
                 assertThat(command[4], is("BAD=" + new File(sqlLoaderOutputFileBasePath, "Person.bad").getPath()));
@@ -183,7 +178,7 @@ public class SqlLoaderBatchletTest {
             public void $init(String... command) {
                 // 指定した引数でコンストラクタが実行されていること
                 assertThat(command[0], is("sqlldr"));
-                assertThat(command[1], is("USERID=ssd/ssd@xe"));
+                assertThat(command[1], is("USERID=user/pass@db_name"));
                 assertThat(command[2], is("CONTROL=" + new File("src/test/resources/nablarch/etl/ctl/Person.ctl").getPath()));
                 assertThat(command[3], is("DATA=" + new File("src/test/resources/nablarch/etl/data/Person.csv").getPath()));
                 assertThat(command[4], is("BAD=" + new File(sqlLoaderOutputFileBasePath, "Person.bad").getPath()));
@@ -210,6 +205,7 @@ public class SqlLoaderBatchletTest {
             sut.process();
             fail("プロセスが異常終了したため、例外が発生");
         } catch (Exception e) {
+            e.printStackTrace();
             assertThat(e, instanceOf(SqlLoaderFailedException.class));
             assertThat(e.getMessage(), is("failed to execute SQL*Loader. controlFile = [" + new File("src/test/resources/nablarch/etl/ctl/Person.ctl").getPath() + ']'));
         }

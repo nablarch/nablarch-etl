@@ -1,5 +1,5 @@
 group = 'com.nablarch.framework'
-version = '1.1.1'
+version = '1.2.0'
 description = 'ETL機能を実現する'
 
 buildscript {

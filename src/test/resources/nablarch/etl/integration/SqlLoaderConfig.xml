@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration
+    xmlns="http://tis.co.jp/nablarch/component-configuration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration component-configuration.xsd">
+  
+  <component name="sqlLoaderConfig" class="nablarch.etl.SqlLoaderConfig">
+    <property name="userName" value="${db.user}" />
+    <property name="password" value="${db.password}" />
+    <property name="databaseName" value="${db.databaseName}" />
+  </component>
+</component-configuration>

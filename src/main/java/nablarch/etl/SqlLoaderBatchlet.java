@@ -31,15 +31,6 @@ import nablarch.etl.config.StepConfig;
 @Dependent
 public class SqlLoaderBatchlet extends AbstractBatchlet {
 
-    /** {@link SystemRepository}に登録されているDB接続ユーザのキー */
-    private static final String USER_KEY = "db.user";
-
-    /** {@link SystemRepository}に登録されているDB接続パスワードのキー */
-    private static final String PASSWORD_KEY = "db.password";
-
-    /** {@link SystemRepository}に登録されているデータベース名のキー */
-    private static final String DATABASE_NAME_KEY = "db.databaseName";
-
     /** {@link JobContext} */
     private final JobContext jobContext;
 
@@ -93,10 +84,7 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
     @Override
     public String process() throws Exception {
 
-        final String user = getUser();
-        final String password = getPassword();
-        final String databaseName = getDatabaseName();
-
+        final SqlLoaderConfig sqlLoaderConfig = getConfig();
         final String jobId = jobContext.getJobName();
         final String stepId = stepContext.getStepName();
 
@@ -115,7 +103,7 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
             return "FAILED";
         }
 
-        SqlLoaderRunner runner = new SqlLoaderRunner(user, password, databaseName, ctlFile, dataFile.getPath(), badFile, logFile);
+        final SqlLoaderRunner runner = new SqlLoaderRunner(sqlLoaderConfig, ctlFile, dataFile.getPath(), badFile, logFile);
         runner.execute();
 
         if (!runner.isSuccess()) {
@@ -125,43 +113,16 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
         return "SUCCESS";
     }
 
-    /**
-     * SQL*Loaderの実行に必要なDB接続ユーザ情報を{@link SystemRepository}より以下のキー名で取得する。
-     * <ul>
-     *     <li>db.user</li>
-     * </ul>
-     * ユーザの取得方法を変更したい場合は本メソッドをオーバーライドし、任意の処理を記述すること。
-     *
-     * @return ユーザ
-     */
-    protected String getUser() {
-        return SystemRepository.getString(USER_KEY);
-    }
 
     /**
-     * SQL*Loaderの実行に必要なDB接続パスワード情報を{@link SystemRepository}より以下のキー名で取得する。
-     * <ul>
-     *     <li>db.password</li>
-     * </ul>
-     * パスワードの取得方法を変更したい場合は本メソッドをオーバーライドし、任意の処理を記述すること。
+     * SQL*Loaderの実行時に必要な設定情報を{@link SystemRepository}から取得すし返却する。
      *
-     * @return パスワード
-     */
-    protected String getPassword() {
-        return SystemRepository.getString(PASSWORD_KEY);
-    }
-
-    /**
-     * SQL*Loaderの実行に必要なデータベース名を{@link SystemRepository}より以下のキー名で取得する。
-     * <ul>
-     *     <li>db.databaseName</li>
-     * </ul>
-     * データベース名の取得方法を変更したい場合は本メソッドをオーバーライドし、任意の処理を記述すること。
+     * {@code SystemRepository}には、コンポーネント名を{@code sqlLoaderConfig}として{@link SqlLoaderConfig}を設定する必要がある。
      *
      * @return データベース名
      */
-    protected String getDatabaseName() {
-        return SystemRepository.getString(DATABASE_NAME_KEY);
+    protected SqlLoaderConfig getConfig() {
+        return SystemRepository.get("sqlLoaderConfig");
     }
 
     /**
@@ -198,19 +159,17 @@ public class SqlLoaderBatchlet extends AbstractBatchlet {
         /**
          * コンストラクタ。
          *
-         * @param userName DB接続ユーザ名
-         * @param password DB接続パスワード
-         * @param databaseName データベース名
+         * @param sqlLoaderConfig SQL*Loaderユーティリティに関する設定
          * @param ctrlFile コントロールファイル
          * @param dataFile データファイル
          * @param badFile BADファイル
          * @param logFile ログファイル
          */
-        public SqlLoaderRunner(String userName, String password, String databaseName, String ctrlFile,
-                               String dataFile, String badFile, String logFile) {
-            this.userName = userName;
-            this.password = password;
-            this.databaseName = databaseName;
+        public SqlLoaderRunner(final SqlLoaderConfig sqlLoaderConfig, String ctrlFile,
+                String dataFile, String badFile, String logFile) {
+            userName = sqlLoaderConfig.getUserName();
+            password = sqlLoaderConfig.getPassword();
+            databaseName = sqlLoaderConfig.getDatabaseName();
             this.ctrlFile = ctrlFile;
             this.dataFile = dataFile;
             this.badFile = badFile;

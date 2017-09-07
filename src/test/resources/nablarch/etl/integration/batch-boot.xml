@@ -8,6 +8,8 @@
   <config-file file="nablarch/etl/integration/db.config" />
 
   <import file="db-default.xml" />
+
+  <import file="nablarch/etl/integration/SqlLoaderConfig.xml" />
   <import file="nablarch/etl/integration/batchListeners.xml" />
 
   <import file="nablarch/etl/integration/validation.xml" />
