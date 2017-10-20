@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.Arrays;
@@ -225,13 +227,11 @@ public class FileItemWriterTest {
         final FileItemWriter sut = new FileItemWriter(
                 mockJobContext, mockStepContext, stepConfig, outputFileBasePath);
 
-        // ファイルを読み取り専用にする
-        output.setReadOnly();
-
         // ここで例外が発生する
         try {
             sut.open(null);
-            fail();
+            sut.writeItems(Collections.<Object>singletonList(EtlFileItemWriterBean.create("10001", 10000)));
+            fail("openまたはwrite時に例外が発生するはず。");
         } catch (BatchRuntimeException e) {
             final String message = "出力ファイルパスが正しくありません。ディレクトリが存在しているか、権限が正しいかを確認してください。出力ファイルパス=[" + output.getAbsolutePath() + ']';
             assertThat(OnMemoryLogWriter.getMessages("writer.operator")
