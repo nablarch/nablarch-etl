@@ -15,6 +15,7 @@ import org.junit.Test;
 import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +42,8 @@ public class EtlConfigProviderTest {
      */
     @Before
     public void setUp() throws Exception {
-        Deencapsulation.setField(EtlConfigProvider.class, "LOADED_ETL_CONFIG", new ConcurrentHashMap<String, JobConfig>());
+        Map cache = Deencapsulation.getField(EtlConfigProvider.class, "LOADED_ETL_CONFIG");
+        cache.clear();
     }
 
     /**

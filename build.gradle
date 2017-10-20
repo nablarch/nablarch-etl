@@ -44,7 +44,7 @@ dependencies {
   provided 'javax.validation:validation-api:1.1.0.Final'
 
   // test api
-  testCompile 'org.jmockit:jmockit:1.13'
+  testCompile 'org.jmockit:jmockit:1.35'
   testCompile 'junit:junit:4.12'
   testCompile 'org.hamcrest:hamcrest-all:1.3'
 

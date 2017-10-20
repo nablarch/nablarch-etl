@@ -31,7 +31,7 @@ import org.junit.rules.TemporaryFolder;
 
 import mockit.Deencapsulation;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * {@link FileItemWriter}のテストクラス。
@@ -55,11 +55,13 @@ public class FileItemWriterTest {
         OnMemoryLogWriter.clear();
 
         // -------------------------------------------------- setup objects that is injected
-        new NonStrictExpectations() {{
+        new Expectations() {{
             mockStepContext.getStepName();
             result = "test-step";
+            minTimes = 0;
             mockJobContext.getJobName();
             result = "test-job";
+            minTimes = 0;
         }};
     }
 
