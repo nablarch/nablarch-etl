@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import nablarch.common.dao.DatabaseUtil;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
@@ -114,7 +114,7 @@ public class EtlUtilTest {
     @Test
     public void getUrl() throws Exception {
         final TransactionManagerConnection connection = DbConnectionContext.getTransactionManagerConnection();
-        new NonStrictExpectations(connection) {{
+        new Expectations(connection) {{
             final DatabaseMetaData metaData = connection.getConnection().getMetaData();
             metaData.getURL();
             result = "jdbc:oracle:thin:@localhost:1521/xe";
@@ -129,7 +129,7 @@ public class EtlUtilTest {
     @Test
     public void getUrl_nullValue() throws Exception {
         final TransactionManagerConnection connection = DbConnectionContext.getTransactionManagerConnection();
-        new NonStrictExpectations(connection) {{
+        new Expectations(connection) {{
             final DatabaseMetaData metaData = connection.getConnection().getMetaData();
             metaData.getURL();
             result = null;
@@ -145,7 +145,7 @@ public class EtlUtilTest {
     @Test
     public void getUrl_shouldThrowRuntimeException() throws Exception {
         final TransactionManagerConnection connection = DbConnectionContext.getTransactionManagerConnection();
-        new NonStrictExpectations(connection) {{
+        new Expectations(connection) {{
             final DatabaseMetaData metaData = connection.getConnection().getMetaData();
             metaData.getURL();
             result = new SQLException("db error");

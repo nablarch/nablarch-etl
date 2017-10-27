@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * {@link MergeSqlGeneratorFactory}のテスト
@@ -28,7 +28,7 @@ public class MergeSqlGeneratorFactoryTest {
 
     @Test
     public void testOracle() throws Exception {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             final Connection connection = mockConnection.getConnection();
             final DatabaseMetaData metaData = connection.getMetaData();
             metaData.getURL();
@@ -41,7 +41,7 @@ public class MergeSqlGeneratorFactoryTest {
 
     @Test
     public void testH2() throws Exception {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             final Connection connection = mockConnection.getConnection();
             final DatabaseMetaData metaData = connection.getMetaData();
             metaData.getURL();
@@ -54,7 +54,7 @@ public class MergeSqlGeneratorFactoryTest {
 
     @Test
     public void testSqlServer() throws Exception {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             final Connection connection = mockConnection.getConnection();
             final DatabaseMetaData metaData = connection.getMetaData();
             metaData.getURL();
@@ -67,7 +67,7 @@ public class MergeSqlGeneratorFactoryTest {
 
     @Test
     public void testPostgres() throws Exception {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             final Connection connection = mockConnection.getConnection();
             final DatabaseMetaData metaData = connection.getMetaData();
             metaData.getURL();
@@ -80,7 +80,7 @@ public class MergeSqlGeneratorFactoryTest {
     
     @Test
     public void testDb2() throws Exception {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             final Connection connection = mockConnection.getConnection();
             final DatabaseMetaData metaData = connection.getMetaData();
             metaData.getURL();
@@ -93,7 +93,7 @@ public class MergeSqlGeneratorFactoryTest {
 
     @Test
     public void urlIsNull_shouldThrowException() throws Exception {
-        new NonStrictExpectations() {{
+        new Expectations() {{
             final Connection connection = mockConnection.getConnection();
             final DatabaseMetaData metaData = connection.getMetaData();
             metaData.getURL();

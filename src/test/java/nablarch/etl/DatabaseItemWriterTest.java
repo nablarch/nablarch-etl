@@ -40,7 +40,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * {@link DatabaseItemWriter}のテストクラス。
@@ -75,11 +75,13 @@ public class DatabaseItemWriterTest {
         VariousDbTestHelper.delete(EtlDatabaseItemWriterEntity.class);
         OnMemoryLogWriter.clear();
         
-        new NonStrictExpectations() {{
+        new Expectations() {{
             mockJobContext.getJobName();
             result = "test-job";
+            minTimes = 0;
             mockStepContext.getStepName();
             result = "test-step";
+            minTimes = 0;
         }};
         
     }

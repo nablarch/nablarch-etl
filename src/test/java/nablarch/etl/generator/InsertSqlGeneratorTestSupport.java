@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * InsertSqlGeneratorのテストをサポートするクラス。
@@ -43,9 +43,10 @@ public class InsertSqlGeneratorTestSupport {
     @Before
     public void setUp() throws Exception {
         connection = VariousDbTestHelper.getNativeConnection();
-        new NonStrictExpectations() {{
+        new Expectations() {{
             mockConnection.getConnection();
             result = connection;
+            minTimes = 0;
         }};
         DbConnectionContext.setConnection(mockConnection);
     }

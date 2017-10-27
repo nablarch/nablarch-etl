@@ -27,7 +27,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * {@link FileItemReader}のテストクラス。
@@ -50,7 +50,7 @@ public class FileItemReaderTest {
     public void setUp() {
 
         // -------------------------------------------------- setup objects that is injected
-        new NonStrictExpectations() {{
+        new Expectations() {{
             mockStepContext.getStepName();
             result = "test-step";
             mockJobContext.getJobName();

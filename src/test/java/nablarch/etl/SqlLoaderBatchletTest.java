@@ -31,7 +31,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * {@link SqlLoaderBatchlet}のテストクラス。
@@ -140,7 +140,7 @@ public class SqlLoaderBatchletTest {
             }
         };
 
-        new NonStrictExpectations() {{
+        new Expectations() {{
             inputStream.read();
             result = (int) 'テ';
             result = (int) 'ス';
@@ -191,7 +191,7 @@ public class SqlLoaderBatchletTest {
             }
         };
 
-        new NonStrictExpectations() {{
+        new Expectations() {{
             inputStream.read();
             result = (int) 'テ';
             result = (int) 'ス';

@@ -7,6 +7,9 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.Arrays;
@@ -17,6 +20,8 @@ import javax.batch.operations.BatchRuntimeException;
 import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 
+import mockit.Mock;
+import mockit.MockUp;
 import nablarch.common.databind.csv.Csv;
 import nablarch.core.repository.SystemRepository;
 import nablarch.etl.config.DbToFileStepConfig;
@@ -31,7 +36,7 @@ import org.junit.rules.TemporaryFolder;
 
 import mockit.Deencapsulation;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 /**
  * {@link FileItemWriter}のテストクラス。
@@ -55,11 +60,13 @@ public class FileItemWriterTest {
         OnMemoryLogWriter.clear();
 
         // -------------------------------------------------- setup objects that is injected
-        new NonStrictExpectations() {{
+        new Expectations() {{
             mockStepContext.getStepName();
             result = "test-step";
+            minTimes = 0;
             mockJobContext.getJobName();
             result = "test-job";
+            minTimes = 0;
         }};
     }
 
@@ -213,8 +220,6 @@ public class FileItemWriterTest {
     @Test
     public void testOutputFileCanNotWrite() throws Exception {
         final File outputFileBasePath = temporaryFolder.newFolder();
-        final File output = new File(outputFileBasePath, "dummy");
-        output.createNewFile();
 
         // -------------------------------------------------- setup objects that is injected
         final DbToFileStepConfig stepConfig = new DbToFileStepConfig();
@@ -223,15 +228,19 @@ public class FileItemWriterTest {
         final FileItemWriter sut = new FileItemWriter(
                 mockJobContext, mockStepContext, stepConfig, outputFileBasePath);
 
-        // ファイルを読み取り専用にする
-        output.setReadOnly();
+        new MockUp<FileOutputStream>() {
+            @Mock void $init(File file) throws FileNotFoundException {
+                throw new FileNotFoundException("access denied.");
+            }
+        };
 
         // ここで例外が発生する
         try {
             sut.open(null);
             fail();
         } catch (BatchRuntimeException e) {
-            final String message = "出力ファイルパスが正しくありません。ディレクトリが存在しているか、権限が正しいかを確認してください。出力ファイルパス=[" + output.getAbsolutePath() + ']';
+            String filePath = new File(outputFileBasePath, "dummy").getAbsolutePath();
+            final String message = "出力ファイルパスが正しくありません。ディレクトリが存在しているか、権限が正しいかを確認してください。出力ファイルパス=[" + filePath + ']';
             assertThat(OnMemoryLogWriter.getMessages("writer.operator")
                                         .get(0), containsString("-ERROR- " + message));
             assertThat(e.getMessage(), is(message));
