@@ -13,6 +13,15 @@
     <artifactId>nablarch-parent</artifactId>
     <version>1.0.0</version>
   </parent>
+  
+  <profiles>
+    <profile>
+      <id>java9</id>
+      <properties>
+        <junit.additionalArgLine>--add-modules java.xml.bind</junit.additionalArgLine>
+      </properties>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
