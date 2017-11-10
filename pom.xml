@@ -14,12 +14,30 @@
     <version>1.0.0</version>
   </parent>
   
+  <properties>
+    <jboss.marshalling.version>1.4.10.Final</jboss.marshalling.version>
+  </properties>
+  
   <profiles>
     <profile>
       <id>java9</id>
       <properties>
         <junit.additionalArgLine>--add-modules java.xml.bind</junit.additionalArgLine>
+        <jboss.marshalling.version>2.0.2.Final</jboss.marshalling.version>
       </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>nablarch.etl.integration.EtlIntegrationTest</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
@@ -96,7 +114,7 @@
     <dependency>
       <groupId>org.jboss.marshalling</groupId>
       <artifactId>jboss-marshalling</artifactId>
-      <version>1.4.10.Final</version>
+      <version>${jboss.marshalling.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
