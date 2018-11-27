@@ -26,11 +26,22 @@
   
   <profiles>
     <profile>
-      <id>java9</id>
+      <id>java11</id>
       <properties>
-        <junit.additionalArgLine>--add-modules java.xml.bind</junit.additionalArgLine>
         <jboss.marshalling.version>2.0.2.Final</jboss.marshalling.version>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
