@@ -1,11 +1,6 @@
 nablarch-etl
 ===============
 
-| master | develop |
-|:-----------|:------------|
-|[![Build Status](https://travis-ci.org/nablarch/nablarch-etl.svg?branch=master)](https://travis-ci.org/nablarch/nablarch-etl)|[![Build Status](https://travis-ci.org/nablarch/nablarch-etl.svg?branch=develop)](https://travis-ci.org/nablarch/nablarch-etl)|
-
-
 ## 依存ライブラリ
 
 本モジュールのコンパイルまたはテストには、下記ライブラリを手動でローカルリポジトリへインストールする必要があります。
